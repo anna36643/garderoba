@@ -25,7 +25,6 @@ def login_required(f):
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    s = STRINGS
     if request.method == "POST":
         email = request.form["email"].strip().lower()
         password = request.form["password"]
@@ -39,7 +38,7 @@ def register():
         ).fetchone()
 
         if not code:
-            flash(s["register_invalid_code"], "error")
+            flash(STRINGS["register_invalid_code"], "error")
             db.close()
             return redirect("/register")
 
@@ -48,7 +47,7 @@ def register():
         ).fetchone()
 
         if existing:
-            flash(s["register_email_taken"], "error")
+            flash(STRINGS["register_email_taken"], "error")
             db.close()
             return redirect("/register")
 
@@ -71,7 +70,7 @@ def register():
         session["user_id"] = user["id"]
         db.close()
 
-        flash(s["register_success"], "success")
+        flash(STRINGS["register_success"], "success")
         return redirect("/setup")
 
     return render_template("register.html", s=STRINGS)
@@ -79,7 +78,6 @@ def register():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    s = STRINGS
     if request.method == "POST":
         email = request.form["email"].strip().lower()
         password = request.form["password"]
@@ -91,10 +89,20 @@ def login():
         db.close()
 
         if not user or not check_password_hash(user["password_hash"], password):
-            flash(s["login_invalid"], "error")
+            flash(STRINGS["login_invalid"], "error")
             return redirect("/login")
 
         session["user_id"] = user["id"]
+
+        db = get_db()
+        furniture = db.execute(
+            "SELECT id FROM furniture WHERE user_id = ?", (user["id"],)
+        ).fetchone()
+        db.close()
+
+        if not furniture:
+            return redirect("/setup")
+
         return redirect("/")
 
     return render_template("login.html", s=STRINGS)
@@ -106,17 +114,64 @@ def logout():
     return redirect("/login")
 
 
+@app.route("/setup", methods=["GET", "POST"])
+@login_required
+def setup():
+    if request.method == "POST":
+        furniture_name = request.form["furniture_name"].strip()
+        furniture_type = request.form["furniture_type"]
+        person_name = request.form["person_name"].strip()
+        user_id = session["user_id"]
+
+        if furniture_type not in ("szafa", "komoda"):
+            furniture_type = "szafa"
+
+        db = get_db()
+        db.execute(
+            "INSERT INTO furniture (user_id, name, type) VALUES (?, ?, ?)",
+            (user_id, furniture_name, furniture_type)
+        )
+        db.commit()
+
+        furniture = db.execute(
+            "SELECT id FROM furniture WHERE user_id = ? ORDER BY id DESC LIMIT 1",
+            (user_id,)
+        ).fetchone()
+
+        db.execute(
+            "INSERT INTO persons (user_id, furniture_id, name) VALUES (?, ?, ?)",
+            (user_id, furniture["id"], person_name)
+        )
+        db.commit()
+        db.close()
+
+        return redirect("/")
+
+    db = get_db()
+    furniture = db.execute(
+        "SELECT id FROM furniture WHERE user_id = ?", (session["user_id"],)
+    ).fetchone()
+    db.close()
+
+    if furniture:
+        return redirect("/")
+
+    return render_template("setup.html", s=STRINGS)
+
+
 @app.route("/")
 @login_required
 def index():
     return "strona główna - w budowie"
 
 
-@app.route("/setup")
-@login_required
-def setup():
-    return "kreator - w budowie"
-
-
 if __name__ == "__main__":
     app.run(debug=True)
+'''
+
+---
+
+Uruchom serwer:
+```
+python app.py
+'''

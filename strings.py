@@ -25,4 +25,16 @@ STRINGS = {
 
     # Wylogowanie
     "logout": "Wyloguj się",
+
+    # Kreator
+    "setup_title": "Witaj w Garderobie",
+    "setup_subtitle": "Zacznijmy od pierwszego miejsca gdzie przechowasz wspomnienia.",
+    "setup_furniture_name": "Jak nazwiesz swój mebel?",
+    "setup_furniture_name_hint": "np. Szafa z szufladkami, Komoda marzeń",
+    "setup_furniture_type": "Jakiego rodzaju to mebel?",
+    "setup_type_wardrobe": "Szafa",
+    "setup_type_dresser": "Komoda",
+    "setup_person_name": "Kogo chcesz tu przechować?",
+    "setup_person_name_hint": "Imię bliskiej osoby",
+    "setup_submit": "Stwórz moją garderobę",
 }
