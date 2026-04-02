@@ -1,5 +1,4 @@
 import sqlite3
-import os
 
 DATABASE = "garderoba.db"
 
@@ -19,6 +18,7 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             email TEXT NOT NULL UNIQUE,
             password_hash TEXT NOT NULL,
+            display_name TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     """)
@@ -36,7 +36,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS furniture (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
-            name TEXT NOT NULL,
+            name TEXT,
             type TEXT NOT NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users(id)

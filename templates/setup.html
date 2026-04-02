@@ -13,37 +13,48 @@
             </p>
         </div>
 
-        <div style="background: white; border-radius: var(--radius); padding: 40px; box-shadow: var(--shadow-medium); border: 1px solid var(--beige-dark);">
+        <div style="background: linear-gradient(160deg, #faf6ef 0%, #f0e8d8 100%); border-radius: 20px; padding: 40px; box-shadow: 0 24px 64px rgba(61,40,20,0.18), inset 0 1px 0 rgba(255,255,255,0.7); border: 1px solid rgba(184,149,106,0.3);">
             <form method="POST" action="/setup">
 
-                <div style="margin-bottom: 28px;">
-                    <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-soft); margin-bottom: 8px; letter-spacing: 0.5px; text-transform: uppercase;">
-                        {{ s.setup_furniture_name }}
+                <div style="margin-bottom: 24px;">
+                    <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-soft); margin-bottom: 8px; letter-spacing: 0.8px; text-transform: uppercase;">
+                        {{ s.setup_display_name }}
                     </label>
-                    <input type="text" name="furniture_name" required placeholder="{{ s.setup_furniture_name_hint }}"
-                        style="width: 100%; padding: 12px 16px; border: 1.5px solid var(--beige-dark); border-radius: var(--radius-small); font-family: 'Nunito', sans-serif; font-size: 15px; color: var(--text-main); background: var(--cream); outline: none; transition: border-color 0.2s ease;"
-                        onfocus="this.style.borderColor='var(--sage)'"
-                        onblur="this.style.borderColor='var(--beige-dark)'">
+                    <input type="text" name="display_name" placeholder="{{ s.setup_display_name_hint }}"
+                        style="width: 100%; padding: 12px 16px; border: 1.5px solid var(--beige-dark); border-radius: 12px; font-family: 'Nunito', sans-serif; font-size: 15px; color: var(--text-main); background: rgba(255,255,255,0.7); outline: none; transition: border-color 0.2s ease, background 0.2s ease;"
+                        onfocus="this.style.borderColor='var(--sage)'; this.style.background='white';"
+                        onblur="this.style.borderColor='var(--beige-dark)'; this.style.background='rgba(255,255,255,0.7)';">
+                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 5px; font-style: italic;">{{ s.setup_display_name_hint_sub }}</div>
                 </div>
 
-                <div style="margin-bottom: 28px;">
-                    <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-soft); margin-bottom: 12px; letter-spacing: 0.5px; text-transform: uppercase;">
+                <div style="height: 1px; background: var(--beige-dark); margin: 28px 0; opacity: 0.6;"></div>
+
+                <div style="margin-bottom: 24px;">
+                    <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-soft); margin-bottom: 8px; letter-spacing: 0.8px; text-transform: uppercase;">
+                        {{ s.setup_furniture_name }}
+                    </label>
+                    <input type="text" name="furniture_name" placeholder="{{ s.setup_furniture_name_hint }}"
+                        style="width: 100%; padding: 12px 16px; border: 1.5px solid var(--beige-dark); border-radius: 12px; font-family: 'Nunito', sans-serif; font-size: 15px; color: var(--text-main); background: rgba(255,255,255,0.7); outline: none; transition: border-color 0.2s ease, background 0.2s ease;"
+                        onfocus="this.style.borderColor='var(--sage)'; this.style.background='white';"
+                        onblur="this.style.borderColor='var(--beige-dark)'; this.style.background='rgba(255,255,255,0.7)';">
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-soft); margin-bottom: 12px; letter-spacing: 0.8px; text-transform: uppercase;">
                         {{ s.setup_furniture_type }}
                     </label>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                         <label style="cursor: pointer;">
                             <input type="radio" name="furniture_type" value="szafa" checked style="display: none;" class="type-radio">
-                            <div class="type-card" data-value="szafa"
-                                style="padding: 16px; border: 2px solid var(--sage); border-radius: var(--radius-small); text-align: center; background: var(--sage-pale); transition: all 0.2s ease;">
-                                <div style="font-size: 28px; margin-bottom: 6px;">🚪</div>
+                            <div class="type-card" style="padding: 16px; border: 2px solid var(--sage); border-radius: 12px; text-align: center; background: var(--sage-pale); transition: all 0.2s ease;">
+                                <div style="font-size: 26px; margin-bottom: 6px;">🚪</div>
                                 <div style="font-size: 14px; font-weight: 600; color: var(--brown-dark);">{{ s.setup_type_wardrobe }}</div>
                             </div>
                         </label>
                         <label style="cursor: pointer;">
                             <input type="radio" name="furniture_type" value="komoda" style="display: none;" class="type-radio">
-                            <div class="type-card" data-value="komoda"
-                                style="padding: 16px; border: 2px solid var(--beige-dark); border-radius: var(--radius-small); text-align: center; background: var(--cream); transition: all 0.2s ease;">
-                                <div style="font-size: 28px; margin-bottom: 6px;">🗄️</div>
+                            <div class="type-card" style="padding: 16px; border: 2px solid var(--beige-dark); border-radius: 12px; text-align: center; background: var(--cream); transition: all 0.2s ease;">
+                                <div style="font-size: 26px; margin-bottom: 6px;">🗄️</div>
                                 <div style="font-size: 14px; font-weight: 600; color: var(--text-soft);">{{ s.setup_type_dresser }}</div>
                             </div>
                         </label>
@@ -51,37 +62,33 @@
                 </div>
 
                 <div style="margin-bottom: 36px;">
-                    <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-soft); margin-bottom: 8px; letter-spacing: 0.5px; text-transform: uppercase;">
+                    <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-soft); margin-bottom: 8px; letter-spacing: 0.8px; text-transform: uppercase;">
                         {{ s.setup_person_name }}
                     </label>
                     <input type="text" name="person_name" required placeholder="{{ s.setup_person_name_hint }}"
-                        style="width: 100%; padding: 12px 16px; border: 1.5px solid var(--beige-dark); border-radius: var(--radius-small); font-family: 'Nunito', sans-serif; font-size: 15px; color: var(--text-main); background: var(--cream); outline: none; transition: border-color 0.2s ease;"
-                        onfocus="this.style.borderColor='var(--sage)'"
-                        onblur="this.style.borderColor='var(--beige-dark)'">
+                        style="width: 100%; padding: 12px 16px; border: 1.5px solid var(--beige-dark); border-radius: 12px; font-family: 'Nunito', sans-serif; font-size: 15px; color: var(--text-main); background: rgba(255,255,255,0.7); outline: none; transition: border-color 0.2s ease, background 0.2s ease;"
+                        onfocus="this.style.borderColor='var(--sage)'; this.style.background='white';"
+                        onblur="this.style.borderColor='var(--beige-dark)'; this.style.background='rgba(255,255,255,0.7)';">
                 </div>
 
                 <button type="submit"
-                    style="width: 100%; padding: 14px; background: var(--sage); color: white; border: none; border-radius: var(--radius-small); font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s ease, transform 0.1s ease;"
+                    style="width: 100%; padding: 14px; background: var(--sage); color: white; border: none; border-radius: 12px; font-family: 'Lora', serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s ease, transform 0.1s ease; box-shadow: 0 4px 14px rgba(135,168,120,0.3);"
                     onmouseover="this.style.background='var(--brown-light)'"
                     onmouseout="this.style.background='var(--sage)'"
                     onmousedown="this.style.transform='scale(0.98)'"
                     onmouseup="this.style.transform='scale(1)'">
                     {{ s.setup_submit }}
                 </button>
-
             </form>
         </div>
-
     </div>
 </div>
 
 <script>
     const radios = document.querySelectorAll('.type-radio');
-    const cards = document.querySelectorAll('.type-card');
-
     radios.forEach(radio => {
         radio.addEventListener('change', () => {
-            cards.forEach(card => {
+            document.querySelectorAll('.type-card').forEach(card => {
                 card.style.border = '2px solid var(--beige-dark)';
                 card.style.background = 'var(--cream)';
                 card.querySelector('div:last-child').style.color = 'var(--text-soft)';

@@ -1,8 +1,6 @@
 STRINGS = {
-    # Ogólne
     "app_name": "Garderoba",
 
-    # Rejestracja
     "register_title": "Utwórz konto",
     "register_email": "Adres email",
     "register_password": "Hasło",
@@ -14,7 +12,6 @@ STRINGS = {
     "register_email_taken": "Ten adres email jest już zajęty.",
     "register_success": "Konto zostało utworzone. Witaj w Garderobie.",
 
-    # Logowanie
     "login_title": "Zaloguj się",
     "login_email": "Adres email",
     "login_password": "Hasło",
@@ -23,18 +20,40 @@ STRINGS = {
     "login_register_link": "Zarejestruj się",
     "login_invalid": "Nieprawidłowy email lub hasło.",
 
-    # Wylogowanie
     "logout": "Wyloguj się",
 
-    # Kreator
     "setup_title": "Witaj w Garderobie",
     "setup_subtitle": "Zacznijmy od pierwszego miejsca gdzie przechowasz wspomnienia.",
+    "setup_display_name": "Jak masz na imię?",
+    "setup_display_name_hint": "np. Ania",
+    "setup_display_name_hint_sub": "opcjonalne — pojawi się w powitaniu",
     "setup_furniture_name": "Jak nazwiesz swój mebel?",
-    "setup_furniture_name_hint": "np. Szafa z szufladkami, Komoda marzeń",
+    "setup_furniture_name_hint": "opcjonalne, np. Szafa marzeń",
     "setup_furniture_type": "Jakiego rodzaju to mebel?",
     "setup_type_wardrobe": "Szafa",
     "setup_type_dresser": "Komoda",
     "setup_person_name": "Kogo chcesz tu przechować?",
     "setup_person_name_hint": "Imię bliskiej osoby",
     "setup_submit": "Stwórz moją garderobę",
+
+    "index_heading_name": "Cześć, {}!",
+    "index_heading_generic": "Twoja garderoba",
+    "index_add_furniture": "Dodaj nowy mebel",
+    "index_add_person": "Dodaj osobę",
+    "index_empty": "Twoja garderoba jest pusta. Dodaj pierwszy mebel.",
+    "index_edit_furniture": "Edytuj mebel",
+    "index_delete_furniture": "Usuń mebel",
+    "index_no_persons": "Brak osób w tym meblu",
+
+    "form_furniture_name": "Nazwa mebla",
+    "form_furniture_name_hint": "opcjonalne",
+    "form_furniture_type": "Typ mebla",
+    "form_person_name": "Imię osoby",
+    "form_save": "Zapisz",
+    "form_cancel": "Anuluj",
+    "form_add": "Dodaj",
+
+    "delete_furniture_title": "Usuń mebel",
+    "delete_furniture_confirm": "Czy na pewno chcesz usunąć ten mebel? Wszystkie osoby i ich notatki zostaną trwale usunięte.",
+    "delete_furniture_submit": "Tak, usuń",
 }

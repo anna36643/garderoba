@@ -23,6 +23,17 @@ def login_required(f):
     return decorated
 
 
+def get_current_user():
+    if "user_id" not in session:
+        return None
+    db = get_db()
+    user = db.execute(
+        "SELECT * FROM users WHERE id = ?", (session["user_id"],)
+    ).fetchone()
+    db.close()
+    return user
+
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -31,7 +42,6 @@ def register():
         invite_code = request.form["invite_code"].strip()
 
         db = get_db()
-
         code = db.execute(
             "SELECT * FROM invite_codes WHERE code = ? AND used = 0",
             (invite_code,)
@@ -52,7 +62,6 @@ def register():
             return redirect("/register")
 
         password_hash = generate_password_hash(password)
-
         db.execute(
             "INSERT INTO users (email, password_hash) VALUES (?, ?)",
             (email, password_hash)
@@ -118,7 +127,8 @@ def logout():
 @login_required
 def setup():
     if request.method == "POST":
-        furniture_name = request.form["furniture_name"].strip()
+        display_name = request.form.get("display_name", "").strip() or None
+        furniture_name = request.form.get("furniture_name", "").strip() or None
         furniture_type = request.form["furniture_type"]
         person_name = request.form["person_name"].strip()
         user_id = session["user_id"]
@@ -127,6 +137,13 @@ def setup():
             furniture_type = "szafa"
 
         db = get_db()
+
+        if display_name:
+            db.execute(
+                "UPDATE users SET display_name = ? WHERE id = ?",
+                (display_name, user_id)
+            )
+
         db.execute(
             "INSERT INTO furniture (user_id, name, type) VALUES (?, ?, ?)",
             (user_id, furniture_name, furniture_type)
@@ -144,7 +161,6 @@ def setup():
         )
         db.commit()
         db.close()
-
         return redirect("/")
 
     db = get_db()
@@ -162,16 +178,140 @@ def setup():
 @app.route("/")
 @login_required
 def index():
-    return "strona główna - w budowie"
+    user_id = session["user_id"]
+    db = get_db()
+
+    user = db.execute(
+        "SELECT display_name FROM users WHERE id = ?", (user_id,)
+    ).fetchone()
+
+    furnitures = db.execute(
+        "SELECT * FROM furniture WHERE user_id = ? ORDER BY created_at ASC",
+        (user_id,)
+    ).fetchall()
+
+    furniture_list = []
+    for f in furnitures:
+        persons = db.execute(
+            "SELECT * FROM persons WHERE furniture_id = ? AND user_id = ? ORDER BY created_at ASC",
+            (f["id"], user_id)
+        ).fetchall()
+        furniture_list.append({"furniture": f, "persons": persons})
+
+    db.close()
+    return render_template(
+        "index.html",
+        s=STRINGS,
+        furniture_list=furniture_list,
+        display_name=user["display_name"] if user["display_name"] else None
+    )
+
+
+@app.route("/furniture/add", methods=["POST"])
+@login_required
+def furniture_add():
+    name = request.form.get("name", "").strip() or None
+    furniture_type = request.form["type"]
+    user_id = session["user_id"]
+
+    if furniture_type not in ("szafa", "komoda"):
+        furniture_type = "szafa"
+
+    db = get_db()
+    db.execute(
+        "INSERT INTO furniture (user_id, name, type) VALUES (?, ?, ?)",
+        (user_id, name, furniture_type)
+    )
+    db.commit()
+    db.close()
+    return redirect("/")
+
+
+@app.route("/furniture/edit", methods=["POST"])
+@login_required
+def furniture_edit():
+    furniture_id = request.form["furniture_id"]
+    name = request.form.get("name", "").strip() or None
+    furniture_type = request.form["type"]
+    user_id = session["user_id"]
+
+    if furniture_type not in ("szafa", "komoda"):
+        furniture_type = "szafa"
+
+    db = get_db()
+    db.execute(
+        "UPDATE furniture SET name = ?, type = ? WHERE id = ? AND user_id = ?",
+        (name, furniture_type, furniture_id, user_id)
+    )
+    db.commit()
+    db.close()
+    return redirect("/")
+
+
+@app.route("/furniture/delete", methods=["POST"])
+@login_required
+def furniture_delete():
+    furniture_id = request.form["furniture_id"]
+    user_id = session["user_id"]
+
+    db = get_db()
+    furniture = db.execute(
+        "SELECT id FROM furniture WHERE id = ? AND user_id = ?",
+        (furniture_id, user_id)
+    ).fetchone()
+
+    if not furniture:
+        db.close()
+        return redirect("/")
+
+    persons = db.execute(
+        "SELECT id FROM persons WHERE furniture_id = ?", (furniture_id,)
+    ).fetchall()
+
+    for person in persons:
+        db.execute("DELETE FROM notes WHERE person_id = ?", (person["id"],))
+
+    db.execute("DELETE FROM persons WHERE furniture_id = ?", (furniture_id,))
+    db.execute(
+        "DELETE FROM furniture WHERE id = ? AND user_id = ?",
+        (furniture_id, user_id)
+    )
+    db.commit()
+    db.close()
+    return redirect("/")
+
+
+@app.route("/person/add", methods=["POST"])
+@login_required
+def person_add():
+    furniture_id = request.form["furniture_id"]
+    name = request.form["name"].strip()
+    user_id = session["user_id"]
+
+    db = get_db()
+    furniture = db.execute(
+        "SELECT id FROM furniture WHERE id = ? AND user_id = ?",
+        (furniture_id, user_id)
+    ).fetchone()
+
+    if not furniture:
+        db.close()
+        return redirect("/")
+
+    db.execute(
+        "INSERT INTO persons (user_id, furniture_id, name) VALUES (?, ?, ?)",
+        (user_id, furniture_id, name)
+    )
+    db.commit()
+    db.close()
+    return redirect("/")
+
+
+@app.route("/person/<int:person_id>")
+@login_required
+def person(person_id):
+    return "podstrona osoby - w budowie"
 
 
 if __name__ == "__main__":
     app.run(debug=True)
-'''
-
----
-
-Uruchom serwer:
-```
-python app.py
-'''

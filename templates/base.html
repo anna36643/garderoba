@@ -28,18 +28,23 @@
             --text-muted: #a89880;
             --shadow-soft: 0 4px 20px rgba(139, 111, 78, 0.12);
             --shadow-medium: 0 8px 32px rgba(139, 111, 78, 0.18);
-            --radius: 16px;
-            --radius-small: 10px;
+            --radius: 20px;
+            --radius-small: 12px;
+        }
+
+        html {
+            min-height: 100%;
+            background:
+                radial-gradient(ellipse at 28% 18%, rgba(240, 210, 140, 0.45) 0%, transparent 62%),
+                linear-gradient(160deg, #f7f0e4 0%, #ede4d2 50%, #d8c8a8 100%);
+            background-attachment: scroll;
         }
 
         body {
             font-family: 'Nunito', sans-serif;
-            background-color: var(--cream);
             color: var(--text-main);
             min-height: 100vh;
-            background-image:
-                radial-gradient(ellipse at 20% 50%, rgba(135, 168, 120, 0.08) 0%, transparent 60%),
-                radial-gradient(ellipse at 80% 20%, rgba(184, 149, 106, 0.08) 0%, transparent 60%);
+            background: transparent;
         }
 
         .flash {

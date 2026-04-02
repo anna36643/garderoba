@@ -1,0 +1,1018 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  .bg-fixed {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(160deg, #f7f0e4 0%, #ede4d2 50%, #d8c8a8 100%);
+  }
+
+  .bg-fixed::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 28% 18%, rgba(240,210,140,0.48) 0%, transparent 58%);
+  }
+
+  .page-wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 24px 120px;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 72px;
+  }
+
+  .topbar-title {
+    font-family: 'Lora', serif;
+    font-size: 36px;
+    color: var(--brown-dark);
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+  }
+
+  .topbar-subtitle {
+    font-size: 15px;
+    color: var(--text-soft);
+    margin-top: 6px;
+    font-family: 'Lora', serif;
+    font-style: italic;
+  }
+
+  .btn-ghost {
+    background: rgba(255,255,255,0.5);
+    border: 1.5px solid var(--beige-dark);
+    color: var(--text-soft);
+    padding: 9px 20px;
+    border-radius: 999px;
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+    backdrop-filter: blur(4px);
+    white-space: nowrap;
+    margin-top: 6px;
+  }
+
+  .btn-ghost:hover {
+    background: rgba(255,255,255,0.85);
+    border-color: var(--brown-light);
+    color: var(--brown-dark);
+  }
+
+  .furniture-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 56px;
+    justify-content: center;
+    align-items: flex-end;
+  }
+
+  .wardrobe-wrap,
+  .dresser-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  .furniture-name-label {
+    font-family: 'Lora', serif;
+    font-size: 14px;
+    color: var(--text-soft);
+    font-style: italic;
+    margin-bottom: 12px;
+    opacity: 0.85;
+    min-height: 20px;
+  }
+
+  .wardrobe-svg-wrap,
+  .dresser-svg-wrap {
+    filter: drop-shadow(0 10px 28px rgba(80,35,5,0.22));
+    transition: filter 0.3s ease;
+    display: block;
+    cursor: pointer;
+  }
+
+  .wardrobe-svg-wrap:hover,
+  .dresser-svg-wrap:hover {
+    filter: drop-shadow(0 16px 40px rgba(80,35,5,0.32));
+  }
+
+  .furniture-menu-wrap {
+    position: relative;
+    margin-top: 8px;
+    padding-top: 8px;
+  }
+
+  .furniture-menu-btn {
+    background: rgba(255,255,255,0.55);
+    border: 1px solid var(--beige-dark);
+    border-radius: 999px;
+    padding: 6px 18px;
+    font-family: 'Lora', serif;
+    font-size: 12px;
+    font-style: italic;
+    color: var(--text-soft);
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.2s ease, background 0.2s ease;
+  }
+
+  .wardrobe-wrap:hover .furniture-menu-btn,
+  .dresser-wrap:hover .furniture-menu-btn {
+    opacity: 1;
+  }
+
+  .furniture-menu-btn:hover {
+    background: rgba(255,255,255,0.9);
+    color: var(--brown-dark);
+    border-color: var(--brown-light);
+  }
+
+  .furniture-dropdown {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(160deg, #faf6ef 0%, #f0e8d8 100%);
+    border: 1px solid rgba(184,149,106,0.35);
+    border-radius: 14px;
+    padding: 8px;
+    box-shadow: 0 12px 32px rgba(61,40,20,0.2);
+    min-width: 170px;
+    z-index: 50;
+    animation: dropdown-in 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  @keyframes dropdown-in {
+    from { opacity: 0; transform: translateX(-50%) translateY(6px) scale(0.95); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+  }
+
+  .furniture-dropdown.open { display: block; }
+
+  .dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 9px 14px;
+    background: none;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--text-soft);
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s ease, color 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .dropdown-item:hover {
+    background: rgba(135,168,120,0.15);
+    color: var(--brown-dark);
+  }
+
+  .dropdown-item.danger:hover {
+    background: rgba(180,60,50,0.1);
+    color: #8b3a3a;
+  }
+
+  .dropdown-divider {
+    height: 1px;
+    background: var(--beige-dark);
+    margin: 4px 8px;
+    opacity: 0.6;
+  }
+
+  .bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    padding: 18px 24px 24px;
+    background: linear-gradient(to top, rgba(210,194,164,0.97) 55%, transparent);
+    z-index: 40;
+  }
+
+  .btn-add {
+    background: rgba(255,255,255,0.55);
+    border: 1.5px solid var(--beige-dark);
+    color: var(--text-soft);
+    padding: 10px 24px;
+    border-radius: 999px;
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    font-style: italic;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(6px);
+  }
+
+  .btn-add:hover {
+    background: rgba(255,255,255,0.88);
+    color: var(--brown-dark);
+    border-color: var(--brown-light);
+  }
+
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(61,40,20,0.4);
+    backdrop-filter: blur(6px);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .modal-overlay.active { display: flex; }
+
+  .modal {
+    background: linear-gradient(160deg, #faf6ef 0%, #f0e8d8 100%);
+    border-radius: 20px;
+    padding: 36px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 24px 64px rgba(61,40,20,0.28), inset 0 1px 0 rgba(255,255,255,0.7);
+    border: 1px solid rgba(184,149,106,0.3);
+    animation: modal-in 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  @keyframes modal-in {
+    from { opacity: 0; transform: scale(0.9) translateY(12px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .modal-title {
+    font-family: 'Lora', serif;
+    font-size: 22px;
+    color: var(--brown-dark);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .modal-subtitle {
+    font-size: 14px;
+    color: var(--text-soft);
+    margin-bottom: 28px;
+    line-height: 1.55;
+    font-style: italic;
+  }
+
+  .form-field { margin-bottom: 20px; }
+
+  .form-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-soft);
+    margin-bottom: 8px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+
+  .form-hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 5px;
+    font-style: italic;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--beige-dark);
+    border-radius: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    color: var(--text-main);
+    background: rgba(255,255,255,0.7);
+    outline: none;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .form-input:focus {
+    border-color: var(--sage);
+    background: white;
+  }
+
+  .form-select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--beige-dark);
+    border-radius: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    color: var(--text-main);
+    background: rgba(255,255,255,0.7);
+    outline: none;
+    transition: border-color 0.2s ease;
+    appearance: none;
+    cursor: pointer;
+  }
+
+  .form-select:focus { border-color: var(--sage); }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 28px;
+  }
+
+  .btn-cancel {
+    flex: 1;
+    padding: 12px;
+    background: rgba(224,208,184,0.6);
+    border: 1px solid var(--beige-dark);
+    border-radius: 12px;
+    font-family: 'Lora', serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-soft);
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .btn-cancel:hover { background: var(--beige-dark); }
+
+  .btn-submit {
+    flex: 2;
+    padding: 12px;
+    background: var(--sage);
+    border: none;
+    border-radius: 12px;
+    font-family: 'Lora', serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    box-shadow: 0 4px 14px rgba(135,168,120,0.3);
+  }
+
+  .btn-submit:hover { background: var(--brown-light); }
+
+  .btn-danger {
+    flex: 2;
+    padding: 12px;
+    background: #a93226;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Lora', serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .btn-danger:hover { background: #8b2318; }
+</style>
+
+<div class="bg-fixed"></div>
+
+<div class="page-wrapper">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">{{ s.app_name }}</div>
+      <div class="topbar-subtitle">
+        {% if display_name %}
+          {{ s.index_heading_name.format(display_name) }}
+        {% else %}
+          {{ s.index_heading_generic }}
+        {% endif %}
+      </div>
+    </div>
+    <a href="/logout" class="btn-ghost">{{ s.logout }}</a>
+  </div>
+
+  <div class="furniture-row">
+    {% for item in furniture_list %}
+
+      {% if item.furniture.type == 'szafa' %}
+      <div class="wardrobe-wrap">
+        <div class="furniture-name-label">{{ item.furniture.name or '' }}</div>
+        {% set person = item.persons[0] if item.persons else None %}
+
+        <div class="wardrobe-svg-wrap"
+          id="wardrobe-{{ item.furniture.id }}"
+          {% if person %}onclick="openWardrobe({{ item.furniture.id }}, '/person/{{ person.id }}')"
+          {% else %}onclick="openAddPerson({{ item.furniture.id }})"{% endif %}>
+
+          <svg width="200" viewBox="0 0 340 580" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="sc{{item.furniture.id}}" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#c88030"/>
+                <stop offset="50%" stop-color="#e09848"/>
+                <stop offset="100%" stop-color="#a06020"/>
+              </linearGradient>
+              <linearGradient id="sdl{{item.furniture.id}}" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#9a5820"/>
+                <stop offset="35%" stop-color="#c07838"/>
+                <stop offset="65%" stop-color="#d08840"/>
+                <stop offset="100%" stop-color="#a06028"/>
+              </linearGradient>
+              <linearGradient id="sdr{{item.furniture.id}}" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#a06028"/>
+                <stop offset="35%" stop-color="#d08840"/>
+                <stop offset="65%" stop-color="#c07838"/>
+                <stop offset="100%" stop-color="#8a4c18"/>
+              </linearGradient>
+              <linearGradient id="scol{{item.furniture.id}}" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#7a3c10"/>
+                <stop offset="30%" stop-color="#c07838"/>
+                <stop offset="60%" stop-color="#d88c40"/>
+                <stop offset="100%" stop-color="#6a3008"/>
+              </linearGradient>
+              <linearGradient id="sbase{{item.furniture.id}}" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#6a3008"/>
+                <stop offset="100%" stop-color="#8a4818"/>
+              </linearGradient>
+              <linearGradient id="shelka{{item.furniture.id}}" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#d08838"/>
+                <stop offset="40%" stop-color="#e8a048"/>
+                <stop offset="100%" stop-color="#b06820"/>
+              </linearGradient>
+              <linearGradient id="shandle{{item.furniture.id}}" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#c8980a"/>
+                <stop offset="100%" stop-color="#8a6000"/>
+              </linearGradient>
+              <linearGradient id="sint{{item.furniture.id}}" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#5a3818"/>
+                <stop offset="100%" stop-color="#2a1408"/>
+              </linearGradient>
+            </defs>
+
+            <!-- wnętrze -->
+            <rect x="32" y="86" width="276" height="404" fill="url(#sint{{item.furniture.id}})"/>
+            <rect x="50" y="112" width="240" height="5" rx="2.5" fill="#c07030" opacity="0.7"/>
+            <rect x="50" y="110" width="240" height="3" rx="1.5" fill="#e09040" opacity="0.4"/>
+            {% for i in range(7) %}
+            <path d="M{{ 65 + i*33 }} 115 Q{{ 65 + i*33 }} 126 {{ 72 + i*33 }} 130 Q{{ 79 + i*33 }} 134 {{ 79 + i*33 }} 145" fill="none" stroke="#c08030" stroke-width="1.8" stroke-linecap="round" opacity="0.5"/>
+            <path d="M{{ 57 + i*33 }} 145 L{{ 87 + i*33 }} 145" fill="none" stroke="#b07020" stroke-width="1.2" stroke-linecap="round" opacity="0.4"/>
+            {% endfor %}
+            <rect x="32" y="380" width="276" height="110" fill="#1a0800" opacity="0.4"/>
+
+            <!-- gzyms -->
+            <rect x="0" y="0" width="340" height="10" rx="1" fill="url(#sc{{item.furniture.id}})" stroke="#6a2c08" stroke-width="0.8"/>
+            <rect x="0" y="8" width="340" height="14" rx="1" fill="url(#sc{{item.furniture.id}})" stroke="#6a2c08" stroke-width="0.9"/>
+            <rect x="4" y="19" width="332" height="7" fill="#8a4410" stroke="#5a2000" stroke-width="0.6"/>
+            <rect x="2" y="24" width="336" height="16" rx="1" fill="url(#sc{{item.furniture.id}})" stroke="#7a3408" stroke-width="0.7"/>
+
+            <!-- boki -->
+            <rect x="0" y="40" width="16" height="462" fill="#7a3c10" stroke="#5a2000" stroke-width="0.7"/>
+            <rect x="324" y="40" width="16" height="462" fill="#7a3c10" stroke="#5a2000" stroke-width="0.7"/>
+
+            <!-- kolumny -->
+            <rect x="14" y="40" width="18" height="462" fill="url(#scol{{item.furniture.id}})" stroke="#4a1800" stroke-width="0.6"/>
+            <line x1="18" y1="48" x2="18" y2="494" stroke="#3a1000" stroke-width="0.5" opacity="0.5"/>
+            <line x1="22" y1="48" x2="22" y2="494" stroke="#e09040" stroke-width="0.4" opacity="0.3"/>
+            <line x1="26" y1="48" x2="26" y2="494" stroke="#3a1000" stroke-width="0.5" opacity="0.5"/>
+            <rect x="10" y="38" width="26" height="10" rx="1" fill="#c07830" stroke="#6a2c08" stroke-width="0.6"/>
+            <rect x="12" y="494" width="22" height="8" rx="1" fill="#a06020" stroke="#6a2c08" stroke-width="0.5"/>
+            <rect x="308" y="40" width="18" height="462" fill="url(#scol{{item.furniture.id}})" stroke="#4a1800" stroke-width="0.6"/>
+            <line x1="312" y1="48" x2="312" y2="494" stroke="#3a1000" stroke-width="0.5" opacity="0.5"/>
+            <line x1="316" y1="48" x2="316" y2="494" stroke="#e09040" stroke-width="0.4" opacity="0.3"/>
+            <line x1="320" y1="48" x2="320" y2="494" stroke="#3a1000" stroke-width="0.5" opacity="0.5"/>
+            <rect x="304" y="38" width="26" height="10" rx="1" fill="#c07830" stroke="#6a2c08" stroke-width="0.6"/>
+            <rect x="306" y="494" width="22" height="8" rx="1" fill="#a06020" stroke="#6a2c08" stroke-width="0.5"/>
+
+            <!-- belka z imieniem -->
+            <rect x="32" y="40" width="276" height="44" rx="1" fill="url(#shelka{{item.furniture.id}})" stroke="#7a3808" stroke-width="0.8"/>
+            <rect x="32" y="80" width="276" height="6" rx="1" fill="#8a4410" stroke="#5a2000" stroke-width="0.5"/>
+            <rect x="40" y="46" width="260" height="32" rx="1" fill="none" stroke="#c07820" stroke-width="0.5" opacity="0.5"/>
+            {% if person %}
+              <text x="171" y="70" text-anchor="middle" font-family="Georgia, serif" font-size="18" font-style="italic" font-weight="bold" fill="#4a1c00" opacity="0.9">{{ person.name }}</text>
+              <text x="170" y="69" text-anchor="middle" font-family="Georgia, serif" font-size="18" font-style="italic" font-weight="bold" fill="#f0c070" opacity="0.4">{{ person.name }}</text>
+              <text x="170.5" y="69.5" text-anchor="middle" font-family="Georgia, serif" font-size="18" font-style="italic" font-weight="bold" fill="#7a3808" opacity="0.55">{{ person.name }}</text>
+              <path d="M115 74 Q170 78 225 74" fill="none" stroke="#8a4810" stroke-width="0.6" opacity="0.5"/>
+            {% else %}
+              <text x="170" y="68" text-anchor="middle" font-family="Georgia, serif" font-size="13" font-style="italic" fill="#9a6030" opacity="0.7">+ dodaj osobę</text>
+            {% endif %}
+
+            <!-- drzwi lewe - podzielone na prostokąt tła i zawartość osobno -->
+            <g id="wdl-{{item.furniture.id}}">
+              <rect id="wdlbg-{{item.furniture.id}}" x="32" y="86" width="137" height="404" rx="1" fill="url(#sdl{{item.furniture.id}})" stroke="#6a2c08" stroke-width="0.8"/>
+              <g id="wdlc-{{item.furniture.id}}">
+                <rect x="37" y="91" width="127" height="394" rx="1" fill="none" stroke="#e09840" stroke-width="0.5" opacity="0.5"/>
+                <rect x="44" y="100" width="113" height="118" rx="2" fill="none" stroke="#9a5818" stroke-width="0.7"/>
+                <rect x="49" y="105" width="103" height="108" rx="1" fill="none" stroke="#c87828" stroke-width="0.4" opacity="0.5"/>
+                <path d="M55 128 Q100 116 148 128" fill="none" stroke="#b06820" stroke-width="0.8"/>
+                <path d="M62 140 Q100 133 138 140 Q100 147 62 140Z" fill="#c88030" stroke="#8a4810" stroke-width="0.4" opacity="0.7"/>
+                <ellipse cx="100" cy="140" rx="13" ry="5" fill="#daa040" stroke="#8a4808" stroke-width="0.4" opacity="0.7"/>
+                <path d="M55 153 Q100 163 148 153" fill="none" stroke="#b06820" stroke-width="0.8"/>
+                <rect x="44" y="228" width="113" height="148" rx="2" fill="none" stroke="#9a5818" stroke-width="0.7"/>
+                <rect x="49" y="233" width="103" height="138" rx="1" fill="none" stroke="#c87828" stroke-width="0.4" opacity="0.5"/>
+                <path d="M55 257 Q100 247 148 257" fill="none" stroke="#b06820" stroke-width="0.8"/>
+                <path d="M63 272 Q100 265 137 272 Q100 279 63 272Z" fill="#c88030" stroke="#8a4810" stroke-width="0.4" opacity="0.7"/>
+                <ellipse cx="100" cy="272" rx="10" ry="4" fill="#daa040" stroke="#8a4808" stroke-width="0.4" opacity="0.7"/>
+                <path d="M55 292 Q100 302 148 292" fill="none" stroke="#b06820" stroke-width="0.8"/>
+                <rect x="32" y="106" width="7" height="14" rx="2" fill="#b08820" stroke="#7a5800" stroke-width="0.5"/>
+                <rect x="32" y="298" width="7" height="14" rx="2" fill="#b08820" stroke="#7a5800" stroke-width="0.5"/>
+                <rect x="32" y="452" width="7" height="14" rx="2" fill="#b08820" stroke="#7a5800" stroke-width="0.5"/>
+                <rect x="158" y="280" width="7" height="22" rx="3.5" fill="url(#shandle{{item.furniture.id}})" stroke="#6a4000" stroke-width="0.7"/>
+              </g>
+            </g>
+
+            <!-- drzwi prawe -->
+            <g id="wdr-{{item.furniture.id}}">
+              <rect id="wdrbg-{{item.furniture.id}}" x="171" y="86" width="137" height="404" rx="1" fill="url(#sdr{{item.furniture.id}})" stroke="#6a2c08" stroke-width="0.8"/>
+              <g id="wdrc-{{item.furniture.id}}">
+                <rect x="176" y="91" width="127" height="394" rx="1" fill="none" stroke="#e09840" stroke-width="0.5" opacity="0.5"/>
+                <rect x="183" y="100" width="113" height="118" rx="2" fill="none" stroke="#9a5818" stroke-width="0.7"/>
+                <rect x="188" y="105" width="103" height="108" rx="1" fill="none" stroke="#c87828" stroke-width="0.4" opacity="0.5"/>
+                <path d="M192 128 Q240 116 286 128" fill="none" stroke="#b06820" stroke-width="0.8"/>
+                <path d="M200 140 Q240 133 278 140 Q240 147 200 140Z" fill="#c88030" stroke="#8a4810" stroke-width="0.4" opacity="0.7"/>
+                <ellipse cx="240" cy="140" rx="13" ry="5" fill="#daa040" stroke="#8a4808" stroke-width="0.4" opacity="0.7"/>
+                <path d="M192 153 Q240 163 286 153" fill="none" stroke="#b06820" stroke-width="0.8"/>
+                <rect x="183" y="228" width="113" height="148" rx="2" fill="none" stroke="#9a5818" stroke-width="0.7"/>
+                <rect x="188" y="233" width="103" height="138" rx="1" fill="none" stroke="#c87828" stroke-width="0.4" opacity="0.5"/>
+                <path d="M192 257 Q240 247 286 257" fill="none" stroke="#b06820" stroke-width="0.8"/>
+                <path d="M200 272 Q240 265 278 272 Q240 279 200 272Z" fill="#c88030" stroke="#8a4810" stroke-width="0.4" opacity="0.7"/>
+                <ellipse cx="240" cy="272" rx="10" ry="4" fill="#daa040" stroke="#8a4808" stroke-width="0.4" opacity="0.7"/>
+                <path d="M192 292 Q240 302 286 292" fill="none" stroke="#b06820" stroke-width="0.8"/>
+                <rect x="301" y="106" width="7" height="14" rx="2" fill="#b08820" stroke="#7a5800" stroke-width="0.5"/>
+                <rect x="301" y="298" width="7" height="14" rx="2" fill="#b08820" stroke="#7a5800" stroke-width="0.5"/>
+                <rect x="301" y="452" width="7" height="14" rx="2" fill="#b08820" stroke="#7a5800" stroke-width="0.5"/>
+                <rect x="175" y="280" width="7" height="22" rx="3.5" fill="url(#shandle{{item.furniture.id}})" stroke="#6a4000" stroke-width="0.7"/>
+              </g>
+            </g>
+
+            <!-- szuflada dołem -->
+            <rect x="32" y="490" width="276" height="14" rx="1" fill="url(#sdl{{item.furniture.id}})" stroke="#6a2c08" stroke-width="0.7"/>
+            <rect x="152" y="492" width="36" height="6" rx="3" fill="url(#shandle{{item.furniture.id}})" stroke="#6a4000" stroke-width="0.5"/>
+
+            <!-- podstawa -->
+            <rect x="0" y="504" width="340" height="14" rx="1" fill="url(#sbase{{item.furniture.id}})" stroke="#4a1800" stroke-width="0.8"/>
+            <rect x="0" y="514" width="340" height="8" rx="2" fill="#3a1008" stroke="#2a0800" stroke-width="0.7"/>
+            <rect x="12" y="522" width="28" height="36" rx="2" fill="url(#sbase{{item.furniture.id}})" stroke="#3a1008" stroke-width="0.7"/>
+            <rect x="18" y="522" width="16" height="36" fill="#5a2408" opacity="0.3"/>
+            <rect x="300" y="522" width="28" height="36" rx="2" fill="url(#sbase{{item.furniture.id}})" stroke="#3a1008" stroke-width="0.7"/>
+            <rect x="306" y="522" width="16" height="36" fill="#5a2408" opacity="0.3"/>
+          </svg>
+        </div>
+
+        <div class="furniture-menu-wrap">
+          <button class="furniture-menu-btn" onclick="toggleMenu(event, 'menu-{{item.furniture.id}}')">Edytuj</button>
+          <div class="furniture-dropdown" id="menu-{{item.furniture.id}}">
+            <button class="dropdown-item" onclick="closeAllMenus(); openEditFurniture({{ item.furniture.id }}, '{{ item.furniture.name or '' }}', '{{ item.furniture.type }}')">zmień nazwę i typ</button>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item danger" onclick="closeAllMenus(); openDeleteFurniture({{ item.furniture.id }})">usuń mebel</button>
+          </div>
+        </div>
+      </div>
+
+      {% else %}
+      <!-- KOMODA -->
+      <div class="dresser-wrap">
+        <div class="furniture-name-label">{{ item.furniture.name or '' }}</div>
+
+        <div class="dresser-svg-wrap" id="dresser-{{ item.furniture.id }}">
+          {% set dh = 78 %}
+          {% set pc = item.persons|length %}
+          {% set show_add = pc < 4 %}
+          {% set td = pc + (1 if show_add else 0) %}
+          {% set kh = 24 + td * (dh + 8) %}
+          {% set svgh = 20 + kh + 120 %}
+
+          <svg width="260" viewBox="0 0 320 {{ svgh }}" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="kf{{item.furniture.id}}" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#c8844a"/>
+                <stop offset="25%" stop-color="#dfa060"/>
+                <stop offset="55%" stop-color="#e8b070"/>
+                <stop offset="80%" stop-color="#d09050"/>
+                <stop offset="100%" stop-color="#b87030"/>
+              </linearGradient>
+              <linearGradient id="kd{{item.furniture.id}}" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#d4944e"/>
+                <stop offset="30%" stop-color="#ecca7a"/>
+                <stop offset="60%" stop-color="#daa858"/>
+                <stop offset="100%" stop-color="#c48840"/>
+              </linearGradient>
+              <linearGradient id="ks{{item.furniture.id}}" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#7a3c10"/>
+                <stop offset="100%" stop-color="#9a5020"/>
+              </linearGradient>
+              <linearGradient id="kt{{item.furniture.id}}" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#f2d898"/>
+                <stop offset="100%" stop-color="#d8a850"/>
+              </linearGradient>
+              <linearGradient id="kh{{item.furniture.id}}" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#c8980a"/>
+                <stop offset="100%" stop-color="#8a6000"/>
+              </linearGradient>
+              <linearGradient id="kint{{item.furniture.id}}" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#4a2808"/>
+                <stop offset="50%" stop-color="#6a3c14"/>
+                <stop offset="100%" stop-color="#4a2808"/>
+              </linearGradient>
+            </defs>
+
+            <!-- blat -->
+            <rect x="0" y="0" width="320" height="12" rx="2" fill="url(#kt{{item.furniture.id}})" stroke="#8a5020" stroke-width="0.8"/>
+            <rect x="4" y="10" width="312" height="8" rx="1" fill="#c88840" stroke="#7a3c10" stroke-width="0.6"/>
+
+            <!-- boki -->
+            <rect x="0" y="18" width="14" height="{{ kh }}" fill="url(#ks{{item.furniture.id}})" stroke="#5a2800" stroke-width="0.6"/>
+            <rect x="306" y="18" width="14" height="{{ kh }}" fill="url(#ks{{item.furniture.id}})" stroke="#5a2800" stroke-width="0.6"/>
+
+            <!-- korpus -->
+            <rect x="14" y="18" width="292" height="{{ kh }}" fill="url(#kf{{item.furniture.id}})" stroke="#7a3c10" stroke-width="0.8"/>
+
+            {% for person in item.persons %}
+            {% set dy = 22 + loop.index0 * (dh + 8) %}
+            <!-- wnętrze szuflady widoczne za nią -->
+            <rect x="22" y="{{ dy + 2 }}" width="276" height="{{ dh - 4 }}" rx="1" fill="url(#kint{{item.furniture.id}})"/>
+
+            <g id="drw-{{ person.id }}"
+               onclick="openDrawer({{ person.id }}, '/person/{{ person.id }}')"
+               style="cursor:pointer;">
+              <!-- cień pod szufladą -->
+              <ellipse id="dsh-{{ person.id }}"
+                cx="160" cy="{{ dy + dh + 6 }}"
+                rx="130" ry="7"
+                fill="#2a1008" opacity="0"/>
+              <!-- cała szuflada jako jedna grupa przesuwana przez JS -->
+              <g id="dfc-{{ person.id }}">
+                <rect x="18" y="{{ dy }}" width="284" height="{{ dh }}" rx="2"
+                      fill="url(#kd{{item.furniture.id}})" stroke="#8a4c18" stroke-width="0.8"/>
+                <rect x="24" y="{{ dy + 5 }}" width="272" height="{{ dh - 10 }}" rx="1"
+                      fill="none" stroke="#f0c868" stroke-width="0.5" opacity="0.6"/>
+                <rect x="30" y="{{ dy + 11 }}" width="260" height="{{ dh - 22 }}" rx="1"
+                      fill="none" stroke="#a06020" stroke-width="0.4" opacity="0.5"/>
+                <path d="M50 {{ dy + 28 }} Q160 {{ dy + 18 }} 270 {{ dy + 28 }}"
+                      fill="none" stroke="#a06828" stroke-width="0.8"/>
+                <path d="M110 {{ dy + 38 }} Q160 {{ dy + 31 }} 210 {{ dy + 38 }} Q160 {{ dy + 45 }} 110 {{ dy + 38 }}Z"
+                      fill="#c89848" stroke="#8a5818" stroke-width="0.4" opacity="0.75"/>
+                <ellipse cx="160" cy="{{ dy + 38 }}" rx="14" ry="5"
+                         fill="#daa848" stroke="#8a5018" stroke-width="0.4" opacity="0.8"/>
+                <text x="160" y="{{ dy + 56 }}" text-anchor="middle"
+                      font-family="Georgia, serif" font-size="12" font-style="italic" font-weight="bold"
+                      fill="#4a1c00" opacity="0.9">{{ person.name }}</text>
+                <text x="159" y="{{ dy + 55 }}" text-anchor="middle"
+                      font-family="Georgia, serif" font-size="12" font-style="italic" font-weight="bold"
+                      fill="#f0c070" opacity="0.38">{{ person.name }}</text>
+                <text x="159.5" y="{{ dy + 55.5 }}" text-anchor="middle"
+                      font-family="Georgia, serif" font-size="12" font-style="italic" font-weight="bold"
+                      fill="#7a3808" opacity="0.5">{{ person.name }}</text>
+                <rect x="143" y="{{ dy + 62 }}" width="34" height="6" rx="3"
+                      fill="url(#kh{{item.furniture.id}})" stroke="#6a4800" stroke-width="0.6"/>
+                <ellipse cx="160" cy="{{ dy + 65 }}" rx="8" ry="2" fill="#a07800" opacity="0.35"/>
+              </g>
+            </g>
+            {% endfor %}
+
+            {% if show_add %}
+            {% set dy_add = 22 + pc * (dh + 8) %}
+            <g style="cursor:pointer;" onclick="openAddPerson({{ item.furniture.id }})">
+              <rect x="18" y="{{ dy_add }}" width="284" height="{{ dh }}" rx="2"
+                    fill="url(#kd{{item.furniture.id}})" stroke="#8a4c18" stroke-width="0.8" opacity="0.4"/>
+              <text x="160" y="{{ dy_add + 44 }}" text-anchor="middle"
+                    font-family="Georgia, serif" font-size="12" font-style="italic"
+                    fill="#9a6030" opacity="0.6">+ dodaj osobę</text>
+            </g>
+            {% endif %}
+
+            <!-- dolna listwa -->
+            <rect x="6" y="{{ 18 + kh }}" width="308" height="14" rx="1" fill="#8a4810" stroke="#5a2800" stroke-width="0.7"/>
+            <rect x="0" y="{{ 28 + kh }}" width="320" height="8" rx="2" fill="#6a3008" stroke="#4a1800" stroke-width="0.7"/>
+
+            <!-- nóżki -->
+            <path d="M36 {{ 36 + kh }} C34 {{ 51 + kh }} 28 {{ 67 + kh }} 24 {{ 83 + kh }} C22 {{ 93 + kh }} 24 {{ 101 + kh }} 28 {{ 105 + kh }} C30 {{ 108 + kh }} 28 {{ 113 + kh }} 26 {{ 118 + kh }}" stroke="#6a3008" stroke-width="9" fill="none" stroke-linecap="round"/>
+            <path d="M36 {{ 36 + kh }} C34 {{ 51 + kh }} 28 {{ 67 + kh }} 24 {{ 83 + kh }} C22 {{ 93 + kh }} 24 {{ 101 + kh }} 28 {{ 105 + kh }} C30 {{ 108 + kh }} 28 {{ 113 + kh }} 26 {{ 118 + kh }}" stroke="#9a5820" stroke-width="5" fill="none" stroke-linecap="round" opacity="0.45"/>
+            <path d="M284 {{ 36 + kh }} C286 {{ 51 + kh }} 292 {{ 67 + kh }} 296 {{ 83 + kh }} C298 {{ 93 + kh }} 296 {{ 101 + kh }} 292 {{ 105 + kh }} C290 {{ 108 + kh }} 292 {{ 113 + kh }} 294 {{ 118 + kh }}" stroke="#6a3008" stroke-width="9" fill="none" stroke-linecap="round"/>
+            <path d="M284 {{ 36 + kh }} C286 {{ 51 + kh }} 292 {{ 67 + kh }} 296 {{ 83 + kh }} C298 {{ 93 + kh }} 296 {{ 101 + kh }} 292 {{ 105 + kh }} C290 {{ 108 + kh }} 292 {{ 113 + kh }} 294 {{ 118 + kh }}" stroke="#9a5820" stroke-width="5" fill="none" stroke-linecap="round" opacity="0.45"/>
+            <path d="M72 {{ 36 + kh }} C70 {{ 49 + kh }} 67 {{ 63 + kh }} 65 {{ 77 + kh }} C64 {{ 86 + kh }} 66 {{ 93 + kh }} 69 {{ 97 + kh }}" stroke="#7a3c10" stroke-width="7" fill="none" stroke-linecap="round"/>
+            <path d="M248 {{ 36 + kh }} C250 {{ 49 + kh }} 253 {{ 63 + kh }} 255 {{ 77 + kh }} C256 {{ 86 + kh }} 254 {{ 93 + kh }} 251 {{ 97 + kh }}" stroke="#7a3c10" stroke-width="7" fill="none" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <div class="furniture-menu-wrap">
+          <button class="furniture-menu-btn" onclick="toggleMenu(event, 'menu-{{item.furniture.id}}')">Edytuj</button>
+          <div class="furniture-dropdown" id="menu-{{item.furniture.id}}">
+            <button class="dropdown-item" onclick="closeAllMenus(); openEditFurniture({{ item.furniture.id }}, '{{ item.furniture.name or '' }}', '{{ item.furniture.type }}')">zmień nazwę i typ</button>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item danger" onclick="closeAllMenus(); openDeleteFurniture({{ item.furniture.id }})">usuń mebel</button>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+    {% endfor %}
+  </div>
+</div>
+
+<div class="bottom-bar">
+  <button class="btn-add" onclick="openAddFurniture()">+ {{ s.index_add_furniture }}</button>
+</div>
+
+<!-- Modale -->
+<div class="modal-overlay" id="modal-add-furniture" onclick="closeModal(event,'modal-add-furniture')">
+  <div class="modal">
+    <div class="modal-title">{{ s.index_add_furniture }}</div>
+    <form method="POST" action="/furniture/add">
+      <div class="form-field">
+        <label class="form-label">{{ s.form_furniture_name }}</label>
+        <input type="text" name="name" class="form-input" placeholder="{{ s.form_furniture_name_hint }}">
+        <div class="form-hint">{{ s.form_furniture_name_hint }}</div>
+      </div>
+      <div class="form-field">
+        <label class="form-label">{{ s.form_furniture_type }}</label>
+        <select name="type" class="form-select">
+          <option value="szafa">Szafa</option>
+          <option value="komoda">Komoda</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeModalById('modal-add-furniture')">{{ s.form_cancel }}</button>
+        <button type="submit" class="btn-submit">{{ s.form_add }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-person" onclick="closeModal(event,'modal-add-person')">
+  <div class="modal">
+    <div class="modal-title">{{ s.index_add_person }}</div>
+    <form method="POST" action="/person/add">
+      <input type="hidden" name="furniture_id" id="add-person-furniture-id">
+      <div class="form-field">
+        <label class="form-label">{{ s.form_person_name }}</label>
+        <input type="text" name="name" class="form-input" required>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeModalById('modal-add-person')">{{ s.form_cancel }}</button>
+        <button type="submit" class="btn-submit">{{ s.form_add }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-edit-furniture" onclick="closeModal(event,'modal-edit-furniture')">
+  <div class="modal">
+    <div class="modal-title">{{ s.index_edit_furniture }}</div>
+    <form method="POST" action="/furniture/edit">
+      <input type="hidden" name="furniture_id" id="edit-furniture-id">
+      <div class="form-field">
+        <label class="form-label">{{ s.form_furniture_name }}</label>
+        <input type="text" name="name" class="form-input" id="edit-furniture-name" placeholder="{{ s.form_furniture_name_hint }}">
+        <div class="form-hint">{{ s.form_furniture_name_hint }}</div>
+      </div>
+      <div class="form-field">
+        <label class="form-label">{{ s.form_furniture_type }}</label>
+        <select name="type" class="form-select" id="edit-furniture-type">
+          <option value="szafa">Szafa</option>
+          <option value="komoda">Komoda</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeModalById('modal-edit-furniture')">{{ s.form_cancel }}</button>
+        <button type="submit" class="btn-submit">{{ s.form_save }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-delete-furniture" onclick="closeModal(event,'modal-delete-furniture')">
+  <div class="modal">
+    <div class="modal-title">{{ s.delete_furniture_title }}</div>
+    <div class="modal-subtitle">{{ s.delete_furniture_confirm }}</div>
+    <form method="POST" action="/furniture/delete">
+      <input type="hidden" name="furniture_id" id="delete-furniture-id">
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeModalById('modal-delete-furniture')">{{ s.form_cancel }}</button>
+        <button type="submit" class="btn-danger">{{ s.delete_furniture_submit }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+/* ---- modals ---- */
+  function openAddFurniture() {
+    closeAllMenus();
+    document.getElementById('modal-add-furniture').classList.add('active');
+  }
+  function openAddPerson(fid) {
+    closeAllMenus();
+    document.getElementById('add-person-furniture-id').value = fid;
+    document.getElementById('modal-add-person').classList.add('active');
+  }
+  function openEditFurniture(id, name, type) {
+    document.getElementById('edit-furniture-id').value = id;
+    document.getElementById('edit-furniture-name').value = name;
+    document.getElementById('edit-furniture-type').value = type;
+    document.getElementById('modal-edit-furniture').classList.add('active');
+  }
+  function openDeleteFurniture(id) {
+    document.getElementById('delete-furniture-id').value = id;
+    document.getElementById('modal-delete-furniture').classList.add('active');
+  }
+  function closeModalById(id) {
+    document.getElementById(id).classList.remove('active');
+  }
+  function closeModal(e, id) {
+    if (e.target === e.currentTarget) closeModalById(id);
+  }
+
+  /* ---- menu ---- */
+  function toggleMenu(e, menuId) {
+    e.stopPropagation();
+    var m = document.getElementById(menuId);
+    var open = m.classList.contains('open');
+    closeAllMenus();
+    if (!open) m.classList.add('open');
+  }
+  function closeAllMenus() {
+    document.querySelectorAll('.furniture-dropdown').forEach(function(m) {
+      m.classList.remove('open');
+    });
+  }
+  document.addEventListener('click', closeAllMenus);
+
+  /* ---- animacja szafy ----
+     Lewe drzwi: zawias po lewej stronie (x=32).
+     Przy otwarciu drzwi zwężają się (scaleX maleje)
+     i przesuwają się w lewo żeby prawa krawędź
+     pozostała przy zawieraniu przy osi zawiasu.
+     Prawe drzwi: zawias po prawej (x=308).
+     Symetrycznie.
+  ------------------------------------------------ */
+  var wardrobeAnims = {};
+
+  function animateWardrobe(fid, targetP, onDone) {
+    if (wardrobeAnims[fid]) cancelAnimationFrame(wardrobeAnims[fid]);
+
+    var groupL = document.getElementById('wdl-' + fid);
+    var groupR = document.getElementById('wdr-' + fid);
+    if (!groupL) return;
+
+    var startP   = parseFloat(groupL.dataset.p || '0');
+    var duration = Math.max(180, Math.abs(targetP - startP) * 520);
+    var startTime = null;
+
+    /* szerokość drzwi w SVG: 137px każde
+       zawias lewych drzwi: x=32 (lewa krawędź)
+       zawias prawych drzwi: x=308 (prawa krawędź grupy prawych drzwi = 171+137)
+    */
+    var doorW = 137;
+
+    function ease(t) {
+      return t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
+    }
+
+    function step(ts) {
+      if (!startTime) startTime = ts;
+      var raw = Math.min((ts - startTime) / duration, 1);
+      var p   = startP + (targetP - startP) * ease(raw);
+
+      /* scaleX: od 1 do minimalnej wartości przy pełnym otwarciu */
+      var sx = 1 - p * 0.82;
+
+      /* lewe drzwi: obrót wokół lewej krawędzi (x=32)
+         transform-origin w SVG ustawiamy przez translate-scale-translate */
+      var txL = 32 + (1 - sx) * 0;
+      groupL.setAttribute('transform',
+        'translate(' + txL + ',0) scale(' + sx + ',1) translate(' + (-32) + ',0)'
+      );
+
+      /* prawe drzwi: obrót wokół prawej krawędzi (x=308)
+         prawa krawędź prawych drzwi = 171 + 137 = 308 */
+      var originR = 308;
+      groupR.setAttribute('transform',
+        'translate(' + originR + ',0) scale(' + sx + ',1) translate(' + (-originR) + ',0)'
+      );
+
+      groupL.dataset.p = String(p);
+
+      if (raw < 1) {
+        wardrobeAnims[fid] = requestAnimationFrame(step);
+      } else {
+        wardrobeAnims[fid] = null;
+        if (onDone) onDone();
+      }
+    }
+
+    wardrobeAnims[fid] = requestAnimationFrame(step);
+  }
+
+  document.querySelectorAll('.wardrobe-svg-wrap').forEach(function(el) {
+    var fid = el.id.replace('wardrobe-', '');
+    el.addEventListener('mouseenter', function() {
+      animateWardrobe(fid, 0.42, null);
+    });
+    el.addEventListener('mouseleave', function() {
+      animateWardrobe(fid, 0, null);
+    });
+  });
+
+  function openWardrobe(fid, url) {
+    animateWardrobe(fid, 1, function() {
+      window.location.href = url;
+    });
+  }
+
+  /* ---- animacja szuflady ---- */
+  var drawerAnims = {};
+
+  function animateDrawer(pid, targetY, targetShadow, onDone) {
+    if (drawerAnims[pid]) cancelAnimationFrame(drawerAnims[pid]);
+
+    var face   = document.getElementById('dfc-' + pid);
+    var shadow = document.getElementById('dsh-' + pid);
+    if (!face) return;
+
+    var startY      = parseFloat(face.dataset.y || '0');
+    var startShadow = parseFloat(shadow ? (shadow.dataset.op || '0') : '0');
+    var duration    = 320;
+    var startTime   = null;
+
+    function ease(t) {
+      return t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
+    }
+
+    function step(ts) {
+      if (!startTime) startTime = ts;
+      var raw = Math.min((ts - startTime) / duration, 1);
+      var e   = ease(raw);
+
+      var y  = startY + (targetY - startY) * e;
+      var op = startShadow + (targetShadow - startShadow) * e;
+
+      face.setAttribute('transform', 'translate(0,' + y + ')');
+      face.dataset.y = String(y);
+
+      if (shadow) {
+        shadow.setAttribute('opacity', String(op));
+        shadow.dataset.op = String(op);
+      }
+
+      if (raw < 1) {
+        drawerAnims[pid] = requestAnimationFrame(step);
+      } else {
+        drawerAnims[pid] = null;
+        if (onDone) onDone();
+      }
+    }
+
+    drawerAnims[pid] = requestAnimationFrame(step);
+  }
+
+  document.querySelectorAll('[id^="drw-"]').forEach(function(el) {
+    var pid = el.id.replace('drw-', '');
+    el.addEventListener('mouseenter', function() {
+      animateDrawer(pid, 7, 0.28, null);
+    });
+    el.addEventListener('mouseleave', function() {
+      animateDrawer(pid, 0, 0, null);
+    });
+  });
+
+  function openDrawer(pid, url) {
+    animateDrawer(pid, 14, 0.6, function() {
+      window.location.href = url;
+    });
+  }
+
+  /* ---- reset po powrocie ---- */
+  window.addEventListener('pageshow', function() {
+    document.querySelectorAll('.wardrobe-svg-wrap').forEach(function(el) {
+      var fid = el.id.replace('wardrobe-', '');
+      var gL = document.getElementById('wdl-' + fid);
+      var gR = document.getElementById('wdr-' + fid);
+      if (!gL) return;
+      gL.setAttribute('transform', '');
+      gL.dataset.p = '0';
+      gR.setAttribute('transform', '');
+    });
+    document.querySelectorAll('[id^="dfc-"]').forEach(function(el) {
+      var pid = el.id.replace('dfc-', '');
+      el.setAttribute('transform', '');
+      el.dataset.y = '0';
+      var sh = document.getElementById('dsh-' + pid);
+      if (sh) { sh.setAttribute('opacity', '0'); sh.dataset.op = '0'; }
+    });
+  });
+</script>
+
+{% endblock %}
