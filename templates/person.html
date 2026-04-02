@@ -1,0 +1,900 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  .bg-fixed {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(160deg, #f7f0e4 0%, #ede4d2 50%, #d8c8a8 100%);
+  }
+  .bg-fixed::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 28% 18%, rgba(240,210,140,0.48) 0%, transparent 58%);
+  }
+
+  .page-wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 24px 120px;
+  }
+
+  /* topbar */
+  .topbar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 48px;
+    gap: 16px;
+  }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.5);
+    border: 1.5px solid var(--beige-dark);
+    color: var(--text-soft);
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    font-style: italic;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    backdrop-filter: blur(4px);
+    white-space: nowrap;
+  }
+
+  .back-btn:hover {
+    background: rgba(255,255,255,0.85);
+    color: var(--brown-dark);
+    border-color: var(--brown-light);
+  }
+
+  .person-heading {
+    font-family: 'Lora', serif;
+    font-size: 38px;
+    color: var(--brown-dark);
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+  }
+
+  .person-subheading {
+    font-family: 'Lora', serif;
+    font-size: 15px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 5px;
+  }
+
+  /* sekcja piosenek - wyróżniona */
+  .songs-section {
+    background: linear-gradient(135deg, #e8f0e4 0%, #d8e8d0 100%);
+    border-radius: 20px;
+    padding: 28px 32px 32px;
+    margin-bottom: 28px;
+    border: 1px solid rgba(135,168,120,0.3);
+    box-shadow: 0 4px 20px rgba(87,130,80,0.1);
+    position: relative;
+  }
+
+  .songs-accent {
+    position: absolute;
+    top: 24px;
+    right: 28px;
+    font-size: 28px;
+    opacity: 0.25;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* sekcje zwykłe */
+  .note-section {
+    background: linear-gradient(160deg, #faf6ef 0%, #f5edd8 100%);
+    border-radius: 20px;
+    padding: 28px 32px 32px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(184,149,106,0.25);
+    box-shadow: 0 4px 16px rgba(139,111,78,0.1);
+    position: relative;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+
+  .section-title {
+    font-family: 'Lora', serif;
+    font-size: 18px;
+    color: var(--brown-dark);
+    font-weight: 600;
+  }
+
+  .section-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 20px;
+  }
+
+  .edit-pen-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 8px;
+    color: var(--text-muted);
+    font-size: 14px;
+    transition: all 0.2s ease;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .edit-pen-btn:hover {
+    background: rgba(139,111,78,0.1);
+    color: var(--brown-dark);
+  }
+
+  /* kartka z notatkami */
+  .notes-paper {
+    background: rgba(255,255,255,0.55);
+    border-radius: 12px;
+    border: 1px solid rgba(184,149,106,0.2);
+    overflow: hidden;
+  }
+
+  .note-line {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(184,149,106,0.12);
+    transition: background 0.15s ease;
+  }
+
+  .note-line:last-child { border-bottom: none; }
+  .note-line:hover { background: rgba(255,255,255,0.7); }
+
+  .note-bullet {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--brown-light);
+    flex-shrink: 0;
+    opacity: 0.6;
+  }
+
+  .note-text {
+    font-family: 'Lora', serif;
+    font-size: 14px;
+    color: var(--text-main);
+    line-height: 1.5;
+    flex: 1;
+  }
+
+  .note-text.edit-mode {
+    background: rgba(255,255,255,0.9);
+    border: 1.5px solid var(--sage);
+    border-radius: 8px;
+    padding: 6px 10px;
+    outline: none;
+    font-family: 'Lora', serif;
+    font-size: 14px;
+    color: var(--text-main);
+    width: 100%;
+  }
+
+  .note-empty {
+    padding: 14px 16px;
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  /* edit actions -->  pojawia się w trybie edycji */
+  .edit-actions {
+    display: none;
+    gap: 8px;
+    margin-top: 12px;
+    justify-content: flex-end;
+  }
+
+  .edit-actions.visible { display: flex; }
+
+  .btn-edit-save {
+    background: var(--sage);
+    border: none;
+    color: white;
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .btn-edit-save:hover { background: var(--brown-light); }
+
+  .btn-edit-cancel {
+    background: rgba(224,208,184,0.6);
+    border: 1px solid var(--beige-dark);
+    color: var(--text-soft);
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .btn-edit-cancel:hover { background: var(--beige-dark); }
+
+  /* dodaj notatkę */
+  .add-note-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .add-note-input {
+    flex: 1;
+    padding: 9px 14px;
+    border: 1.5px solid var(--beige-dark);
+    border-radius: 999px;
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    color: var(--text-main);
+    background: rgba(255,255,255,0.65);
+    outline: none;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .add-note-input:focus {
+    border-color: var(--sage);
+    background: white;
+  }
+
+  .add-note-btn {
+    background: none;
+    border: none;
+    color: var(--sage);
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    font-style: italic;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 999px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .add-note-btn:hover {
+    background: rgba(135,168,120,0.15);
+    color: var(--brown-dark);
+  }
+
+  /* sekcje własne */
+  .custom-section {
+    background: linear-gradient(160deg, #faf6ef 0%, #f0e8d8 100%);
+    border-radius: 20px;
+    padding: 28px 32px 32px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(184,149,106,0.25);
+    box-shadow: 0 4px 16px rgba(139,111,78,0.1);
+    position: relative;
+  }
+
+  /* dodaj własny rozdział */
+  .add-chapter-wrap {
+    margin-top: 8px;
+    margin-bottom: 32px;
+  }
+
+  .add-chapter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.5);
+    border: 1.5px dashed var(--beige-dark);
+    color: var(--text-soft);
+    padding: 10px 22px;
+    border-radius: 999px;
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    font-style: italic;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(4px);
+  }
+
+  .add-chapter-btn:hover {
+    background: rgba(255,255,255,0.85);
+    border-color: var(--brown-light);
+    color: var(--brown-dark);
+  }
+
+  .add-chapter-form {
+    display: none;
+    gap: 10px;
+    align-items: center;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .add-chapter-form.visible { display: flex; }
+
+  .add-chapter-input {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px 16px;
+    border: 1.5px solid var(--beige-dark);
+    border-radius: 12px;
+    font-family: 'Lora', serif;
+    font-size: 14px;
+    color: var(--text-main);
+    background: rgba(255,255,255,0.7);
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+
+  .add-chapter-input:focus { border-color: var(--sage); }
+
+  .btn-chapter-add {
+    background: var(--sage);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .btn-chapter-add:hover { background: var(--brown-light); }
+
+  /* strefa usuwania osoby */
+  .danger-zone {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid rgba(184,149,106,0.2);
+    text-align: center;
+  }
+
+  .danger-zone-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'Lora', serif;
+    font-size: 12px;
+    font-style: italic;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    opacity: 0.6;
+  }
+
+  .danger-zone-btn:hover {
+    opacity: 1;
+    color: #8b3a3a;
+    background: rgba(180,60,50,0.07);
+  }
+
+  /* modal potwierdzenia usunięcia notatki i osoby */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(61,40,20,0.4);
+    backdrop-filter: blur(6px);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .modal-overlay.active { display: flex; }
+
+  .modal {
+    background: linear-gradient(160deg, #faf6ef 0%, #f0e8d8 100%);
+    border-radius: 20px;
+    padding: 36px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 24px 64px rgba(61,40,20,0.28), inset 0 1px 0 rgba(255,255,255,0.7);
+    border: 1px solid rgba(184,149,106,0.3);
+    animation: modal-in 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  @keyframes modal-in {
+    from { opacity: 0; transform: scale(0.9) translateY(12px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .modal-title {
+    font-family: 'Lora', serif;
+    font-size: 20px;
+    color: var(--brown-dark);
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .modal-subtitle {
+    font-size: 14px;
+    color: var(--text-soft);
+    margin-bottom: 28px;
+    line-height: 1.55;
+    font-style: italic;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn-cancel {
+    flex: 1;
+    padding: 12px;
+    background: rgba(224,208,184,0.6);
+    border: 1px solid var(--beige-dark);
+    border-radius: 12px;
+    font-family: 'Lora', serif;
+    font-size: 14px;
+    color: var(--text-soft);
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .btn-cancel:hover { background: var(--beige-dark); }
+
+  .btn-danger {
+    flex: 2;
+    padding: 12px;
+    background: #a93226;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Lora', serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .btn-danger:hover { background: #8b2318; }
+</style>
+
+<div class="bg-fixed"></div>
+
+<div class="page-wrapper">
+
+  <div class="topbar">
+    <div>
+      <div class="person-heading">{{ person.name }}</div>
+      {% if person.furniture_name %}
+        <div class="person-subheading">{{ s.person_in_furniture.format(person.furniture_name) }}</div>
+      {% else %}
+        <div class="person-subheading">{{ s.person_no_furniture_name }}</div>
+      {% endif %}
+    </div>
+    <a href="/" class="back-btn">← {{ s.person_back }}</a>
+  </div>
+
+  <!-- PIOSENKI - wyróżniona sekcja -->
+  <div class="songs-section" id="section-piosenka">
+    <div class="songs-accent">♪</div>
+    <div class="section-header">
+      <div>
+        <div class="section-title">{{ s.cat_songs }}</div>
+        <div class="section-hint">{{ s.cat_songs_hint }}</div>
+      </div>
+      <button class="edit-pen-btn" onclick="toggleEdit('piosenka')" title="edytuj">✒️</button>
+    </div>
+
+    <div class="notes-paper" id="paper-piosenka">
+      {% if notes_by_cat.piosenka %}
+        {% for note in notes_by_cat.piosenka %}
+        <div class="note-line" id="noteline-{{ note.id }}">
+          <div class="note-bullet"></div>
+          <div class="note-text" id="notetext-{{ note.id }}">{{ note.content }}</div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="note-empty" id="empty-piosenka">jeszcze nic tu nie ma — dodaj pierwszą piosenkę</div>
+      {% endif %}
+    </div>
+
+    <div class="edit-actions" id="editactions-piosenka">
+      <button class="btn-edit-cancel" onclick="cancelEdit('piosenka')">{{ s.note_edit_cancel }}</button>
+      <button class="btn-edit-save" onclick="saveEdit('piosenka')">{{ s.note_edit_save }}</button>
+    </div>
+
+    <div class="add-note-row">
+      <input type="text" class="add-note-input" id="addinput-piosenka"
+             placeholder="{{ s.note_placeholder }}"
+             onkeydown="if(event.key==='Enter') addNote('piosenka')">
+      <button class="add-note-btn" onclick="addNote('piosenka')">{{ s.note_add }}</button>
+    </div>
+  </div>
+
+  <!-- CYTATY I ŻYCZENIA -->
+  <div class="note-section" id="section-cytat">
+    <div class="section-header">
+      <div>
+        <div class="section-title">{{ s.cat_quotes }}</div>
+        <div class="section-hint">{{ s.cat_quotes_hint }}</div>
+      </div>
+      <button class="edit-pen-btn" onclick="toggleEdit('cytat')" title="edytuj">✒️</button>
+    </div>
+
+    <div class="notes-paper" id="paper-cytat">
+      {% if notes_by_cat.cytat %}
+        {% for note in notes_by_cat.cytat %}
+        <div class="note-line" id="noteline-{{ note.id }}">
+          <div class="note-bullet"></div>
+          <div class="note-text" id="notetext-{{ note.id }}">{{ note.content }}</div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="note-empty" id="empty-cytat">jeszcze nic tu nie ma — dodaj pierwszy cytat lub życzenie</div>
+      {% endif %}
+    </div>
+
+    <div class="edit-actions" id="editactions-cytat">
+      <button class="btn-edit-cancel" onclick="cancelEdit('cytat')">{{ s.note_edit_cancel }}</button>
+      <button class="btn-edit-save" onclick="saveEdit('cytat')">{{ s.note_edit_save }}</button>
+    </div>
+
+    <div class="add-note-row">
+      <input type="text" class="add-note-input" id="addinput-cytat"
+             placeholder="{{ s.note_placeholder }}"
+             onkeydown="if(event.key==='Enter') addNote('cytat')">
+      <button class="add-note-btn" onclick="addNote('cytat')">{{ s.note_add }}</button>
+    </div>
+  </div>
+
+  <!-- MARZENIA -->
+  <div class="note-section" id="section-marzenie">
+    <div class="section-header">
+      <div>
+        <div class="section-title">{{ s.cat_dreams }}</div>
+        <div class="section-hint">{{ s.cat_dreams_hint }}</div>
+      </div>
+      <button class="edit-pen-btn" onclick="toggleEdit('marzenie')" title="edytuj">✒️</button>
+    </div>
+
+    <div class="notes-paper" id="paper-marzenie">
+      {% if notes_by_cat.marzenie %}
+        {% for note in notes_by_cat.marzenie %}
+        <div class="note-line" id="noteline-{{ note.id }}">
+          <div class="note-bullet"></div>
+          <div class="note-text" id="notetext-{{ note.id }}">{{ note.content }}</div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="note-empty" id="empty-marzenie">jeszcze nic tu nie ma — dodaj pierwsze marzenie</div>
+      {% endif %}
+    </div>
+
+    <div class="edit-actions" id="editactions-marzenie">
+      <button class="btn-edit-cancel" onclick="cancelEdit('marzenie')">{{ s.note_edit_cancel }}</button>
+      <button class="btn-edit-save" onclick="saveEdit('marzenie')">{{ s.note_edit_save }}</button>
+    </div>
+
+    <div class="add-note-row">
+      <input type="text" class="add-note-input" id="addinput-marzenie"
+             placeholder="{{ s.note_placeholder }}"
+             onkeydown="if(event.key==='Enter') addNote('marzenie')">
+      <button class="add-note-btn" onclick="addNote('marzenie')">{{ s.note_add }}</button>
+    </div>
+  </div>
+
+  <!-- WŁASNE ROZDZIAŁY -->
+  {% for cat_name, cat_notes in custom_cats.items() %}
+  <div class="custom-section" id="section-{{ cat_name }}">
+    <div class="section-header">
+      <div>
+        <div class="section-title">{{ cat_name }}</div>
+      </div>
+      <button class="edit-pen-btn" onclick="toggleEdit('{{ cat_name }}')" title="edytuj">✒️</button>
+    </div>
+
+    <div class="notes-paper" id="paper-{{ cat_name }}">
+      {% if cat_notes %}
+        {% for note in cat_notes %}
+        <div class="note-line" id="noteline-{{ note.id }}">
+          <div class="note-bullet"></div>
+          <div class="note-text" id="notetext-{{ note.id }}">{{ note.content }}</div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="note-empty" id="empty-{{ cat_name }}">jeszcze nic tu nie ma</div>
+      {% endif %}
+    </div>
+
+    <div class="edit-actions" id="editactions-{{ cat_name }}">
+      <button class="btn-edit-cancel" onclick="cancelEdit('{{ cat_name }}')">{{ s.note_edit_cancel }}</button>
+      <button class="btn-edit-save" onclick="saveEdit('{{ cat_name }}')">{{ s.note_edit_save }}</button>
+    </div>
+
+    <div class="add-note-row">
+      <input type="text" class="add-note-input" id="addinput-{{ cat_name }}"
+             placeholder="{{ s.note_placeholder }}"
+             onkeydown="if(event.key==='Enter') addNote('{{ cat_name }}')">
+      <button class="add-note-btn" onclick="addNote('{{ cat_name }}')">{{ s.note_add }}</button>
+    </div>
+  </div>
+  {% endfor %}
+
+  <!-- DODAJ WŁASNY ROZDZIAŁ -->
+  <div class="add-chapter-wrap">
+    <button class="add-chapter-btn" onclick="toggleChapterForm()">
+      + {{ s.cat_custom_add }}
+    </button>
+    <div class="add-chapter-form" id="chapter-form">
+      <input type="text" class="add-chapter-input" id="chapter-name-input"
+             placeholder="{{ s.cat_custom_name_hint }}"
+             onkeydown="if(event.key==='Enter') createChapter()">
+      <button class="btn-chapter-add" onclick="createChapter()">{{ s.form_add }}</button>
+    </div>
+  </div>
+
+  <!-- STREFA USUWANIA OSOBY -->
+  <div class="danger-zone">
+    <button class="danger-zone-btn" onclick="openDeletePerson()">
+      {{ s.person_delete_title }} {{ person.name }}
+    </button>
+  </div>
+
+</div>
+
+<!-- Modal: usuń notatkę -->
+<div class="modal-overlay" id="modal-delete-note" onclick="closeModal(event,'modal-delete-note')">
+  <div class="modal">
+    <div class="modal-title">Usuń notatkę</div>
+    <div class="modal-subtitle">{{ s.note_delete_confirm }}</div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModalById('modal-delete-note')">{{ s.note_delete_cancel }}</button>
+      <button class="btn-danger" onclick="confirmDeleteNote()">{{ s.note_delete_submit }}</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: usuń osobę -->
+<div class="modal-overlay" id="modal-delete-person" onclick="closeModal(event,'modal-delete-person')">
+  <div class="modal">
+    <div class="modal-title">{{ s.person_delete_title }}</div>
+    <div class="modal-subtitle">{{ s.person_delete_confirm }}</div>
+    <form method="POST" action="/person/{{ person.id }}/delete">
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeModalById('modal-delete-person')">{{ s.note_delete_cancel }}</button>
+        <button type="submit" class="btn-danger">{{ s.person_delete_submit }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  var PERSON_ID = {{ person.id }};
+  var editStates = {};
+  var pendingDeleteNoteId = null;
+
+  /* ---- tryb edycji ---- */
+  function toggleEdit(cat) {
+    if (editStates[cat]) {
+      cancelEdit(cat);
+      return;
+    }
+    editStates[cat] = {};
+    var paper = document.getElementById('paper-' + cat);
+    var lines = paper.querySelectorAll('.note-line');
+    lines.forEach(function(line) {
+      var noteId = line.id.replace('noteline-', '');
+      var textEl = document.getElementById('notetext-' + noteId);
+      var original = textEl.textContent.trim();
+      editStates[cat][noteId] = original;
+
+      var input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'note-text edit-mode';
+      input.value = original;
+      input.dataset.noteId = noteId;
+      input.id = 'editinput-' + noteId;
+
+      var delBtn = document.createElement('button');
+      delBtn.style.cssText = 'background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:14px;padding:0 4px;flex-shrink:0;transition:color 0.2s;';
+      delBtn.innerHTML = '✕';
+      delBtn.title = 'usuń';
+      delBtn.dataset.noteId = noteId;
+      delBtn.onmouseover = function() { this.style.color = '#8b3a3a'; };
+      delBtn.onmouseout  = function() { this.style.color = 'var(--text-muted)'; };
+      delBtn.onclick = function() {
+        pendingDeleteNoteId = this.dataset.noteId;
+        document.getElementById('modal-delete-note').classList.add('active');
+      };
+
+      textEl.replaceWith(input);
+      line.appendChild(delBtn);
+    });
+
+    document.getElementById('editactions-' + cat).classList.add('visible');
+  }
+
+  function cancelEdit(cat) {
+    if (!editStates[cat]) return;
+    var paper = document.getElementById('paper-' + cat);
+    var inputs = paper.querySelectorAll('.edit-mode');
+    inputs.forEach(function(input) {
+      var noteId = input.dataset.noteId;
+      var original = editStates[cat][noteId];
+      var div = document.createElement('div');
+      div.className = 'note-text';
+      div.id = 'notetext-' + noteId;
+      div.textContent = original;
+      input.replaceWith(div);
+    });
+    paper.querySelectorAll('button[data-note-id]').forEach(function(b) { b.remove(); });
+    document.getElementById('editactions-' + cat).classList.remove('visible');
+    delete editStates[cat];
+  }
+
+  function saveEdit(cat) {
+    if (!editStates[cat]) return;
+    var paper = document.getElementById('paper-' + cat);
+    var inputs = paper.querySelectorAll('.edit-mode');
+    var promises = [];
+
+    inputs.forEach(function(input) {
+      var noteId = input.dataset.noteId;
+      var newVal = input.value.trim();
+      if (!newVal || newVal === editStates[cat][noteId]) return;
+
+      promises.push(
+        fetch('/person/' + PERSON_ID + '/note/' + noteId + '/edit', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+          body: 'content=' + encodeURIComponent(newVal)
+        }).then(function(r) { return r.json(); }).then(function(data) {
+          if (data.ok) editStates[cat][noteId] = newVal;
+        })
+      );
+    });
+
+    Promise.all(promises).then(function() {
+      cancelEdit(cat);
+    });
+  }
+
+  /* ---- usuwanie notatki ---- */
+  function confirmDeleteNote() {
+    if (!pendingDeleteNoteId) return;
+    var noteId = pendingDeleteNoteId;
+    closeModalById('modal-delete-note');
+
+    fetch('/person/' + PERSON_ID + '/note/' + noteId + '/delete', {
+      method: 'POST'
+    }).then(function(r) { return r.json(); }).then(function(data) {
+      if (data.ok) {
+        var line = document.getElementById('noteline-' + noteId);
+        if (line) line.remove();
+      }
+    });
+
+    pendingDeleteNoteId = null;
+  }
+
+  /* ---- dodawanie notatki ---- */
+  function addNote(cat) {
+    var input = document.getElementById('addinput-' + cat);
+    var content = input.value.trim();
+    if (!content) return;
+
+    fetch('/person/' + PERSON_ID + '/note/add', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: 'category=' + encodeURIComponent(cat) + '&content=' + encodeURIComponent(content)
+    }).then(function(r) { return r.json(); }).then(function(data) {
+      if (!data.id) return;
+      input.value = '';
+
+      var empty = document.getElementById('empty-' + cat);
+      if (empty) empty.remove();
+
+      var paper = document.getElementById('paper-' + cat);
+      var line = document.createElement('div');
+      line.className = 'note-line';
+      line.id = 'noteline-' + data.id;
+      line.innerHTML =
+        '<div class="note-bullet"></div>' +
+        '<div class="note-text" id="notetext-' + data.id + '">' +
+        escHtml(data.content) + '</div>';
+      paper.appendChild(line);
+    });
+  }
+
+  /* ---- własny rozdział ---- */
+  function toggleChapterForm() {
+    var f = document.getElementById('chapter-form');
+    f.classList.toggle('visible');
+    if (f.classList.contains('visible')) {
+      document.getElementById('chapter-name-input').focus();
+    }
+  }
+
+  function createChapter() {
+    var nameInput = document.getElementById('chapter-name-input');
+    var name = nameInput.value.trim();
+    if (!name) return;
+
+    fetch('/person/' + PERSON_ID + '/category/add', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: 'name=' + encodeURIComponent(name)
+    }).then(function(r) { return r.json(); }).then(function(data) {
+      if (!data.ok) return;
+      nameInput.value = '';
+      document.getElementById('chapter-form').classList.remove('visible');
+
+      var wrap = document.querySelector('.add-chapter-wrap');
+      var sec = document.createElement('div');
+      sec.className = 'custom-section';
+      sec.id = 'section-' + escHtml(name);
+      sec.innerHTML =
+        '<div class="section-header">' +
+          '<div><div class="section-title">' + escHtml(name) + '</div></div>' +
+          '<button class="edit-pen-btn" onclick="toggleEdit(\'' + escJs(name) + '\')" title="edytuj">✒️</button>' +
+        '</div>' +
+        '<div class="notes-paper" id="paper-' + escHtml(name) + '">' +
+          '<div class="note-empty" id="empty-' + escHtml(name) + '">jeszcze nic tu nie ma</div>' +
+        '</div>' +
+        '<div class="edit-actions" id="editactions-' + escHtml(name) + '">' +
+          '<button class="btn-edit-cancel" onclick="cancelEdit(\'' + escJs(name) + '\')">Anuluj</button>' +
+          '<button class="btn-edit-save" onclick="saveEdit(\'' + escJs(name) + '\')">Zapisz zmiany</button>' +
+        '</div>' +
+        '<div class="add-note-row">' +
+          '<input type="text" class="add-note-input" id="addinput-' + escHtml(name) + '" placeholder="Wpisz notatkę..." ' +
+            'onkeydown="if(event.key===\'Enter\') addNote(\'' + escJs(name) + '\')">' +
+          '<button class="add-note-btn" onclick="addNote(\'' + escJs(name) + '\')">+ dodaj notatkę</button>' +
+        '</div>';
+      wrap.parentNode.insertBefore(sec, wrap);
+    });
+  }
+
+  /* ---- usuwanie osoby ---- */
+  function openDeletePerson() {
+    document.getElementById('modal-delete-person').classList.add('active');
+  }
+
+  /* ---- helpers ---- */
+  function closeModalById(id) {
+    document.getElementById(id).classList.remove('active');
+  }
+
+  function closeModal(e, id) {
+    if (e.target === e.currentTarget) closeModalById(id);
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function escJs(str) {
+    return str.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  }
+</script>
+
+{% endblock %}

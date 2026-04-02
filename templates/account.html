@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  .bg-fixed {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(160deg, #f7f0e4 0%, #ede4d2 50%, #d8c8a8 100%);
+  }
+  .bg-fixed::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 28% 18%, rgba(240,210,140,0.48) 0%, transparent 58%);
+  }
+
+  .page-wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 540px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 48px;
+  }
+
+  .page-title {
+    font-family: 'Lora', serif;
+    font-size: 28px;
+    color: var(--brown-dark);
+    font-weight: 600;
+  }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.5);
+    border: 1.5px solid var(--beige-dark);
+    color: var(--text-soft);
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    font-style: italic;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    backdrop-filter: blur(4px);
+  }
+
+  .back-btn:hover {
+    background: rgba(255,255,255,0.85);
+    color: var(--brown-dark);
+    border-color: var(--brown-light);
+  }
+
+  .card {
+    background: linear-gradient(160deg, #faf6ef 0%, #f0e8d8 100%);
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 20px rgba(139,111,78,0.12);
+    border: 1px solid rgba(184,149,106,0.25);
+  }
+
+  .card-title {
+    font-family: 'Lora', serif;
+    font-size: 18px;
+    color: var(--brown-dark);
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+
+  .form-field { margin-bottom: 18px; }
+
+  .form-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-soft);
+    margin-bottom: 7px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+
+  .form-hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 5px;
+    font-style: italic;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--beige-dark);
+    border-radius: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    color: var(--text-main);
+    background: rgba(255,255,255,0.7);
+    outline: none;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .form-input:focus {
+    border-color: var(--sage);
+    background: white;
+  }
+
+  .btn-submit {
+    background: var(--sage);
+    border: none;
+    color: white;
+    padding: 11px 24px;
+    border-radius: 12px;
+    font-family: 'Lora', serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    box-shadow: 0 4px 14px rgba(135,168,120,0.3);
+  }
+
+  .btn-submit:hover { background: var(--brown-light); }
+
+  .email-display {
+    font-family: 'Lora', serif;
+    font-size: 14px;
+    color: var(--text-soft);
+    font-style: italic;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(184,149,106,0.2);
+    margin-bottom: 20px;
+  }
+</style>
+
+<div class="bg-fixed"></div>
+
+<div class="page-wrapper">
+  <div class="topbar">
+    <div class="page-title">{{ s.account_title }}</div>
+    <a href="/" class="back-btn">← {{ s.account_back }}</a>
+  </div>
+
+  <div class="card">
+    <div class="email-display">{{ user.email }}</div>
+    <div class="card-title">{{ s.account_your_name }}</div>
+    <form method="POST" action="/account">
+      <input type="hidden" name="action" value="name">
+      <div class="form-field">
+        <label class="form-label">{{ s.account_your_name }}</label>
+        <input type="text" name="display_name" class="form-input"
+               value="{{ user.display_name or '' }}"
+               placeholder="np. Ania">
+        <div class="form-hint">{{ s.account_your_name_hint }}</div>
+      </div>
+      <button type="submit" class="btn-submit">{{ s.account_name_save }}</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <div class="card-title">{{ s.account_password_title }}</div>
+    <form method="POST" action="/account">
+      <input type="hidden" name="action" value="password">
+      <div class="form-field">
+        <label class="form-label">{{ s.account_current_password }}</label>
+        <input type="password" name="current_password" class="form-input" required>
+      </div>
+      <div class="form-field">
+        <label class="form-label">{{ s.account_new_password }}</label>
+        <input type="password" name="new_password" class="form-input" required>
+      </div>
+      <button type="submit" class="btn-submit">{{ s.account_password_save }}</button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

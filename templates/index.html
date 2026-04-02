@@ -6,15 +6,18 @@
     position: fixed;
     inset: 0;
     z-index: -1;
-    background: linear-gradient(160deg, #f7f0e4 0%, #ede4d2 50%, #d8c8a8 100%);
+    background: linear-gradient(160deg, #f7f0e4 0%, #ede4d2 55%, #d4c4a0 100%);
   }
 
   .bg-fixed::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at 28% 18%, rgba(240,210,140,0.48) 0%, transparent 58%);
+    background:
+      radial-gradient(ellipse at 22% 15%, rgba(245,215,145,0.52) 0%, transparent 55%),
+      radial-gradient(ellipse at 78% 85%, rgba(184,149,106,0.18) 0%, transparent 50%);
   }
+
 
   .page-wrapper {
     position: relative;
@@ -402,7 +405,10 @@
         {% endif %}
       </div>
     </div>
-    <a href="/logout" class="btn-ghost">{{ s.logout }}</a>
+    <div style="display:flex; gap:10px; align-items:center; margin-top:6px;">
+      <a href="/account" class="btn-ghost">{{ s.account_link }}</a>
+      <a href="/logout" class="btn-ghost">{{ s.logout }}</a>
+    </div>
   </div>
 
   <div class="furniture-row">
