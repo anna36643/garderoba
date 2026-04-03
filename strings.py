@@ -97,4 +97,18 @@ STRINGS = {
     "account_password_saved": "Hasło zostało zmienione.",
     "account_back": "Wróć do garderoby",
     "account_link": "Konto",
+
+    "ai_section_title": "Zapytaj o prezent",
+    "ai_btn_gift": "Pomysły na prezent",
+    "ai_btn_wishes": "Życzenia urodzinowe",
+    "ai_btn_activity": "Co możemy razem zrobić",
+    "ai_custom_placeholder": "albo zapytaj o coś swojego...",
+    "ai_custom_send": "Wyślij",
+    "ai_thinking": "Myślę...",
+    "ai_error": "Coś poszło nie tak. Spróbuj ponownie.",
+    "ai_no_notes": "Dodaj najpierw kilka notatek o tej osobie, żeby AI mogła lepiej dopasować odpowiedź.",
+
+    "ai_relation_label": "Twoja relacja z tą osobą",
+    "ai_relation_hint": "np. siostra, chłopak, mama, przyjaciółka (opcjonalne)",
+    "ai_relation_save": "Zapisz",
 }

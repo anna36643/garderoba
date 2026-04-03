@@ -23,7 +23,6 @@
     padding: 40px 24px 120px;
   }
 
-  /* topbar */
   .topbar {
     display: flex;
     align-items: flex-start;
@@ -74,7 +73,6 @@
     margin-top: 5px;
   }
 
-  /* sekcja piosenek - wyróżniona */
   .songs-section {
     background: linear-gradient(135deg, #e8f0e4 0%, #d8e8d0 100%);
     border-radius: 20px;
@@ -95,9 +93,18 @@
     user-select: none;
   }
 
-  /* sekcje zwykłe */
   .note-section {
     background: linear-gradient(160deg, #faf6ef 0%, #f5edd8 100%);
+    border-radius: 20px;
+    padding: 28px 32px 32px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(184,149,106,0.25);
+    box-shadow: 0 4px 16px rgba(139,111,78,0.1);
+    position: relative;
+  }
+
+  .custom-section {
+    background: linear-gradient(160deg, #faf6ef 0%, #f0e8d8 100%);
     border-radius: 20px;
     padding: 28px 32px 32px;
     margin-bottom: 20px;
@@ -146,7 +153,6 @@
     color: var(--brown-dark);
   }
 
-  /* kartka z notatkami */
   .notes-paper {
     background: rgba(255,255,255,0.55);
     border-radius: 12px;
@@ -203,7 +209,6 @@
     font-style: italic;
   }
 
-  /* edit actions -->  pojawia się w trybie edycji */
   .edit-actions {
     display: none;
     gap: 8px;
@@ -241,7 +246,6 @@
 
   .btn-edit-cancel:hover { background: var(--beige-dark); }
 
-  /* dodaj notatkę */
   .add-note-row {
     display: flex;
     align-items: center;
@@ -286,22 +290,7 @@
     color: var(--brown-dark);
   }
 
-  /* sekcje własne */
-  .custom-section {
-    background: linear-gradient(160deg, #faf6ef 0%, #f0e8d8 100%);
-    border-radius: 20px;
-    padding: 28px 32px 32px;
-    margin-bottom: 20px;
-    border: 1px solid rgba(184,149,106,0.25);
-    box-shadow: 0 4px 16px rgba(139,111,78,0.1);
-    position: relative;
-  }
-
-  /* dodaj własny rozdział */
-  .add-chapter-wrap {
-    margin-top: 8px;
-    margin-bottom: 32px;
-  }
+  .add-chapter-wrap { margin-top: 8px; margin-bottom: 32px; }
 
   .add-chapter-btn {
     display: inline-flex;
@@ -366,7 +355,37 @@
 
   .btn-chapter-add:hover { background: var(--brown-light); }
 
-  /* strefa usuwania osoby */
+  .ai-section {
+    background: linear-gradient(135deg, #f0e8d8 0%, #e8dcc8 100%);
+    border-radius: 20px;
+    padding: 28px 32px 32px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(184,149,106,0.3);
+    box-shadow: 0 4px 16px rgba(139,111,78,0.1);
+  }
+
+  .ai-preset-btn {
+    background: rgba(255,255,255,0.6);
+    border: 1.5px solid var(--beige-dark);
+    color: var(--text-soft);
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    font-style: italic;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(4px);
+  }
+
+  .ai-preset-btn:hover {
+    background: rgba(255,255,255,0.9);
+    border-color: var(--brown-light);
+    color: var(--brown-dark);
+  }
+
+  .ai-preset-btn:active { transform: scale(0.97); }
+
   .danger-zone {
     margin-top: 48px;
     padding-top: 32px;
@@ -394,7 +413,6 @@
     background: rgba(180,60,50,0.07);
   }
 
-  /* modal potwierdzenia usunięcia notatki i osoby */
   .modal-overlay {
     display: none;
     position: fixed;
@@ -441,10 +459,7 @@
     font-style: italic;
   }
 
-  .modal-actions {
-    display: flex;
-    gap: 10px;
-  }
+  .modal-actions { display: flex; gap: 10px; }
 
   .btn-cancel {
     flex: 1;
@@ -491,20 +506,19 @@
         <div class="person-subheading">{{ s.person_no_furniture_name }}</div>
       {% endif %}
     </div>
-    <a href="/" class="back-btn">← {{ s.person_back }}</a>
+    <a href="/" class="back-btn">&#8592; {{ s.person_back }}</a>
   </div>
 
-  <!-- PIOSENKI - wyróżniona sekcja -->
-  <div class="songs-section" id="section-piosenka">
-    <div class="songs-accent">♪</div>
+  <!-- PIOSENKI -->
+  <div class="songs-section">
+    <div class="songs-accent">&#9834;</div>
     <div class="section-header">
       <div>
         <div class="section-title">{{ s.cat_songs }}</div>
         <div class="section-hint">{{ s.cat_songs_hint }}</div>
       </div>
-      <button class="edit-pen-btn" onclick="toggleEdit('piosenka')" title="edytuj">✒️</button>
+      <button class="edit-pen-btn" onclick="toggleEdit('piosenka')">&#9998;</button>
     </div>
-
     <div class="notes-paper" id="paper-piosenka">
       {% if notes_by_cat.piosenka %}
         {% for note in notes_by_cat.piosenka %}
@@ -514,15 +528,13 @@
         </div>
         {% endfor %}
       {% else %}
-        <div class="note-empty" id="empty-piosenka">jeszcze nic tu nie ma — dodaj pierwszą piosenkę</div>
+        <div class="note-empty" id="empty-piosenka">jeszcze nic tu nie ma</div>
       {% endif %}
     </div>
-
     <div class="edit-actions" id="editactions-piosenka">
       <button class="btn-edit-cancel" onclick="cancelEdit('piosenka')">{{ s.note_edit_cancel }}</button>
       <button class="btn-edit-save" onclick="saveEdit('piosenka')">{{ s.note_edit_save }}</button>
     </div>
-
     <div class="add-note-row">
       <input type="text" class="add-note-input" id="addinput-piosenka"
              placeholder="{{ s.note_placeholder }}"
@@ -531,16 +543,15 @@
     </div>
   </div>
 
-  <!-- CYTATY I ŻYCZENIA -->
-  <div class="note-section" id="section-cytat">
+  <!-- CYTATY -->
+  <div class="note-section">
     <div class="section-header">
       <div>
         <div class="section-title">{{ s.cat_quotes }}</div>
         <div class="section-hint">{{ s.cat_quotes_hint }}</div>
       </div>
-      <button class="edit-pen-btn" onclick="toggleEdit('cytat')" title="edytuj">✒️</button>
+      <button class="edit-pen-btn" onclick="toggleEdit('cytat')">&#9998;</button>
     </div>
-
     <div class="notes-paper" id="paper-cytat">
       {% if notes_by_cat.cytat %}
         {% for note in notes_by_cat.cytat %}
@@ -550,15 +561,13 @@
         </div>
         {% endfor %}
       {% else %}
-        <div class="note-empty" id="empty-cytat">jeszcze nic tu nie ma — dodaj pierwszy cytat lub życzenie</div>
+        <div class="note-empty" id="empty-cytat">jeszcze nic tu nie ma</div>
       {% endif %}
     </div>
-
     <div class="edit-actions" id="editactions-cytat">
       <button class="btn-edit-cancel" onclick="cancelEdit('cytat')">{{ s.note_edit_cancel }}</button>
       <button class="btn-edit-save" onclick="saveEdit('cytat')">{{ s.note_edit_save }}</button>
     </div>
-
     <div class="add-note-row">
       <input type="text" class="add-note-input" id="addinput-cytat"
              placeholder="{{ s.note_placeholder }}"
@@ -568,15 +577,14 @@
   </div>
 
   <!-- MARZENIA -->
-  <div class="note-section" id="section-marzenie">
+  <div class="note-section">
     <div class="section-header">
       <div>
         <div class="section-title">{{ s.cat_dreams }}</div>
         <div class="section-hint">{{ s.cat_dreams_hint }}</div>
       </div>
-      <button class="edit-pen-btn" onclick="toggleEdit('marzenie')" title="edytuj">✒️</button>
+      <button class="edit-pen-btn" onclick="toggleEdit('marzenie')">&#9998;</button>
     </div>
-
     <div class="notes-paper" id="paper-marzenie">
       {% if notes_by_cat.marzenie %}
         {% for note in notes_by_cat.marzenie %}
@@ -586,15 +594,13 @@
         </div>
         {% endfor %}
       {% else %}
-        <div class="note-empty" id="empty-marzenie">jeszcze nic tu nie ma — dodaj pierwsze marzenie</div>
+        <div class="note-empty" id="empty-marzenie">jeszcze nic tu nie ma</div>
       {% endif %}
     </div>
-
     <div class="edit-actions" id="editactions-marzenie">
       <button class="btn-edit-cancel" onclick="cancelEdit('marzenie')">{{ s.note_edit_cancel }}</button>
       <button class="btn-edit-save" onclick="saveEdit('marzenie')">{{ s.note_edit_save }}</button>
     </div>
-
     <div class="add-note-row">
       <input type="text" class="add-note-input" id="addinput-marzenie"
              placeholder="{{ s.note_placeholder }}"
@@ -607,12 +613,9 @@
   {% for cat_name, cat_notes in custom_cats.items() %}
   <div class="custom-section" id="section-{{ cat_name }}">
     <div class="section-header">
-      <div>
-        <div class="section-title">{{ cat_name }}</div>
-      </div>
-      <button class="edit-pen-btn" onclick="toggleEdit('{{ cat_name }}')" title="edytuj">✒️</button>
+      <div><div class="section-title">{{ cat_name }}</div></div>
+      <button class="edit-pen-btn" onclick="toggleEdit({{ cat_name|tojson }})">&#9998;</button>
     </div>
-
     <div class="notes-paper" id="paper-{{ cat_name }}">
       {% if cat_notes %}
         {% for note in cat_notes %}
@@ -625,26 +628,22 @@
         <div class="note-empty" id="empty-{{ cat_name }}">jeszcze nic tu nie ma</div>
       {% endif %}
     </div>
-
     <div class="edit-actions" id="editactions-{{ cat_name }}">
-      <button class="btn-edit-cancel" onclick="cancelEdit('{{ cat_name }}')">{{ s.note_edit_cancel }}</button>
-      <button class="btn-edit-save" onclick="saveEdit('{{ cat_name }}')">{{ s.note_edit_save }}</button>
+      <button class="btn-edit-cancel" onclick="cancelEdit({{ cat_name|tojson }})">{{ s.note_edit_cancel }}</button>
+      <button class="btn-edit-save" onclick="saveEdit({{ cat_name|tojson }})">{{ s.note_edit_save }}</button>
     </div>
-
     <div class="add-note-row">
       <input type="text" class="add-note-input" id="addinput-{{ cat_name }}"
              placeholder="{{ s.note_placeholder }}"
-             onkeydown="if(event.key==='Enter') addNote('{{ cat_name }}')">
-      <button class="add-note-btn" onclick="addNote('{{ cat_name }}')">{{ s.note_add }}</button>
+             onkeydown="if(event.key==='Enter') addNote({{ cat_name|tojson }})">
+      <button class="add-note-btn" onclick="addNote({{ cat_name|tojson }})">{{ s.note_add }}</button>
     </div>
   </div>
   {% endfor %}
 
   <!-- DODAJ WŁASNY ROZDZIAŁ -->
   <div class="add-chapter-wrap">
-    <button class="add-chapter-btn" onclick="toggleChapterForm()">
-      + {{ s.cat_custom_add }}
-    </button>
+    <button class="add-chapter-btn" onclick="toggleChapterForm()">+ {{ s.cat_custom_add }}</button>
     <div class="add-chapter-form" id="chapter-form">
       <input type="text" class="add-chapter-input" id="chapter-name-input"
              placeholder="{{ s.cat_custom_name_hint }}"
@@ -653,11 +652,48 @@
     </div>
   </div>
 
-  <!-- STREFA USUWANIA OSOBY -->
+  <!-- AI -->
+  <div class="ai-section">
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
+      <div class="section-title">{{ s.ai_section_title }}</div>
+      <div style="font-size:18px; opacity:0.4;">&#10024;</div>
+    </div>
+    <div class="section-hint">{{ s.ai_no_notes }}</div>
+    <div style="display:flex; gap:8px; align-items:center; margin-bottom:20px;">
+      <input type="text" id="ai-relation-input"
+             placeholder="{{ s.ai_relation_hint }}"
+             style="flex:1; padding:9px 16px; border:1.5px solid var(--beige-dark); border-radius:999px; font-family:'Lora',serif; font-size:13px; color:var(--text-main); background:rgba(255,255,255,0.7); outline:none; transition:border-color 0.2s ease;"
+             onfocus="this.style.borderColor='var(--sage)'"
+             onblur="this.style.borderColor='var(--beige-dark)'"
+             onkeydown="if(event.key==='Enter') saveRelation()">
+      <button class="ai-preset-btn" onclick="saveRelation()" style="white-space:nowrap;">{{ s.ai_relation_save }}</button>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;">
+      <button class="ai-preset-btn" onclick="askAI('gift')">{{ s.ai_btn_gift }}</button>
+      <button class="ai-preset-btn" onclick="askAI('wishes')">{{ s.ai_btn_wishes }}</button>
+      <button class="ai-preset-btn" onclick="askAI('activity')">{{ s.ai_btn_activity }}</button>
+    </div>
+
+    <div style="display:flex; gap:8px; margin-bottom:20px;">
+      <input type="text" id="ai-custom-input"
+             placeholder="{{ s.ai_custom_placeholder }}"
+             style="flex:1; padding:10px 16px; border:1.5px solid var(--beige-dark); border-radius:999px; font-family:'Lora',serif; font-size:13px; color:var(--text-main); background:rgba(255,255,255,0.7); outline:none; transition:border-color 0.2s ease;"
+             onfocus="this.style.borderColor='var(--sage)'"
+             onblur="this.style.borderColor='var(--beige-dark)'"
+             onkeydown="if(event.key==='Enter') askAI('custom')">
+      <button class="ai-preset-btn" onclick="askAI('custom')" style="white-space:nowrap;">{{ s.ai_custom_send }}</button>
+    </div>
+
+    <div id="ai-response-wrap" style="display:none;">
+      <div style="height:1px; background:rgba(184,149,106,0.25); margin-bottom:16px;"></div>
+      <div id="ai-thinking" style="font-family:'Lora',serif; font-size:13px; color:var(--text-muted); font-style:italic; display:none;">{{ s.ai_thinking }}</div>
+      <div id="ai-response" style="font-family:'Lora',serif; font-size:14px; color:var(--text-main); line-height:1.75; white-space:pre-wrap;"></div>
+    </div>
+  </div>
+
+  <!-- USUWANIE OSOBY -->
   <div class="danger-zone">
-    <button class="danger-zone-btn" onclick="openDeletePerson()">
-      {{ s.person_delete_title }} {{ person.name }}
-    </button>
+    <button class="danger-zone-btn" onclick="openDeletePerson()">{{ s.person_delete_title }} {{ person.name }}</button>
   </div>
 
 </div>
@@ -693,12 +729,8 @@
   var editStates = {};
   var pendingDeleteNoteId = null;
 
-  /* ---- tryb edycji ---- */
   function toggleEdit(cat) {
-    if (editStates[cat]) {
-      cancelEdit(cat);
-      return;
-    }
+    if (editStates[cat]) { cancelEdit(cat); return; }
     editStates[cat] = {};
     var paper = document.getElementById('paper-' + cat);
     var lines = paper.querySelectorAll('.note-line');
@@ -717,7 +749,7 @@
 
       var delBtn = document.createElement('button');
       delBtn.style.cssText = 'background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:14px;padding:0 4px;flex-shrink:0;transition:color 0.2s;';
-      delBtn.innerHTML = '✕';
+      delBtn.innerHTML = '&#10005;';
       delBtn.title = 'usuń';
       delBtn.dataset.noteId = noteId;
       delBtn.onmouseover = function() { this.style.color = '#8b3a3a'; };
@@ -730,21 +762,18 @@
       textEl.replaceWith(input);
       line.appendChild(delBtn);
     });
-
     document.getElementById('editactions-' + cat).classList.add('visible');
   }
 
   function cancelEdit(cat) {
     if (!editStates[cat]) return;
     var paper = document.getElementById('paper-' + cat);
-    var inputs = paper.querySelectorAll('.edit-mode');
-    inputs.forEach(function(input) {
+    paper.querySelectorAll('.edit-mode').forEach(function(input) {
       var noteId = input.dataset.noteId;
-      var original = editStates[cat][noteId];
       var div = document.createElement('div');
       div.className = 'note-text';
       div.id = 'notetext-' + noteId;
-      div.textContent = original;
+      div.textContent = editStates[cat][noteId];
       input.replaceWith(div);
     });
     paper.querySelectorAll('button[data-note-id]').forEach(function(b) { b.remove(); });
@@ -755,14 +784,11 @@
   function saveEdit(cat) {
     if (!editStates[cat]) return;
     var paper = document.getElementById('paper-' + cat);
-    var inputs = paper.querySelectorAll('.edit-mode');
     var promises = [];
-
-    inputs.forEach(function(input) {
+    paper.querySelectorAll('.edit-mode').forEach(function(input) {
       var noteId = input.dataset.noteId;
       var newVal = input.value.trim();
       if (!newVal || newVal === editStates[cat][noteId]) return;
-
       promises.push(
         fetch('/person/' + PERSON_ID + '/note/' + noteId + '/edit', {
           method: 'POST',
@@ -773,36 +799,28 @@
         })
       );
     });
-
-    Promise.all(promises).then(function() {
-      cancelEdit(cat);
-    });
+    Promise.all(promises).then(function() { cancelEdit(cat); });
   }
 
-  /* ---- usuwanie notatki ---- */
   function confirmDeleteNote() {
     if (!pendingDeleteNoteId) return;
     var noteId = pendingDeleteNoteId;
     closeModalById('modal-delete-note');
-
-    fetch('/person/' + PERSON_ID + '/note/' + noteId + '/delete', {
-      method: 'POST'
-    }).then(function(r) { return r.json(); }).then(function(data) {
-      if (data.ok) {
-        var line = document.getElementById('noteline-' + noteId);
-        if (line) line.remove();
-      }
-    });
-
+    fetch('/person/' + PERSON_ID + '/note/' + noteId + '/delete', { method: 'POST' })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.ok) {
+          var line = document.getElementById('noteline-' + noteId);
+          if (line) line.remove();
+        }
+      });
     pendingDeleteNoteId = null;
   }
 
-  /* ---- dodawanie notatki ---- */
   function addNote(cat) {
     var input = document.getElementById('addinput-' + cat);
     var content = input.value.trim();
     if (!content) return;
-
     fetch('/person/' + PERSON_ID + '/note/add', {
       method: 'POST',
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -810,36 +828,27 @@
     }).then(function(r) { return r.json(); }).then(function(data) {
       if (!data.id) return;
       input.value = '';
-
       var empty = document.getElementById('empty-' + cat);
       if (empty) empty.remove();
-
       var paper = document.getElementById('paper-' + cat);
       var line = document.createElement('div');
       line.className = 'note-line';
       line.id = 'noteline-' + data.id;
-      line.innerHTML =
-        '<div class="note-bullet"></div>' +
-        '<div class="note-text" id="notetext-' + data.id + '">' +
-        escHtml(data.content) + '</div>';
+      line.innerHTML = '<div class="note-bullet"></div><div class="note-text" id="notetext-' + data.id + '">' + escHtml(data.content) + '</div>';
       paper.appendChild(line);
     });
   }
 
-  /* ---- własny rozdział ---- */
   function toggleChapterForm() {
     var f = document.getElementById('chapter-form');
     f.classList.toggle('visible');
-    if (f.classList.contains('visible')) {
-      document.getElementById('chapter-name-input').focus();
-    }
+    if (f.classList.contains('visible')) document.getElementById('chapter-name-input').focus();
   }
 
   function createChapter() {
     var nameInput = document.getElementById('chapter-name-input');
     var name = nameInput.value.trim();
     if (!name) return;
-
     fetch('/person/' + PERSON_ID + '/category/add', {
       method: 'POST',
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -848,38 +857,27 @@
       if (!data.ok) return;
       nameInput.value = '';
       document.getElementById('chapter-form').classList.remove('visible');
-
       var wrap = document.querySelector('.add-chapter-wrap');
       var sec = document.createElement('div');
       sec.className = 'custom-section';
       sec.id = 'section-' + escHtml(name);
       sec.innerHTML =
-        '<div class="section-header">' +
-          '<div><div class="section-title">' + escHtml(name) + '</div></div>' +
-          '<button class="edit-pen-btn" onclick="toggleEdit(\'' + escJs(name) + '\')" title="edytuj">✒️</button>' +
-        '</div>' +
-        '<div class="notes-paper" id="paper-' + escHtml(name) + '">' +
-          '<div class="note-empty" id="empty-' + escHtml(name) + '">jeszcze nic tu nie ma</div>' +
-        '</div>' +
+        '<div class="section-header"><div><div class="section-title">' + escHtml(name) + '</div></div>' +
+        '<button class="edit-pen-btn" onclick="toggleEdit(' + JSON.stringify(name) + ')">&#9998;</button></div>' +
+        '<div class="notes-paper" id="paper-' + escHtml(name) + '"><div class="note-empty" id="empty-' + escHtml(name) + '">jeszcze nic tu nie ma</div></div>' +
         '<div class="edit-actions" id="editactions-' + escHtml(name) + '">' +
-          '<button class="btn-edit-cancel" onclick="cancelEdit(\'' + escJs(name) + '\')">Anuluj</button>' +
-          '<button class="btn-edit-save" onclick="saveEdit(\'' + escJs(name) + '\')">Zapisz zmiany</button>' +
-        '</div>' +
-        '<div class="add-note-row">' +
-          '<input type="text" class="add-note-input" id="addinput-' + escHtml(name) + '" placeholder="Wpisz notatkę..." ' +
-            'onkeydown="if(event.key===\'Enter\') addNote(\'' + escJs(name) + '\')">' +
-          '<button class="add-note-btn" onclick="addNote(\'' + escJs(name) + '\')">+ dodaj notatkę</button>' +
-        '</div>';
+        '<button class="btn-edit-cancel" onclick="cancelEdit(' + JSON.stringify(name) + ')">Anuluj</button>' +
+        '<button class="btn-edit-save" onclick="saveEdit(' + JSON.stringify(name) + ')">Zapisz zmiany</button></div>' +
+        '<div class="add-note-row"><input type="text" class="add-note-input" id="addinput-' + escHtml(name) + '" placeholder="Wpisz notatkę..." onkeydown="if(event.key===\'Enter\') addNote(' + JSON.stringify(name) + ')">' +
+        '<button class="add-note-btn" onclick="addNote(' + JSON.stringify(name) + ')">+ dodaj notatkę</button></div>';
       wrap.parentNode.insertBefore(sec, wrap);
     });
   }
 
-  /* ---- usuwanie osoby ---- */
   function openDeletePerson() {
     document.getElementById('modal-delete-person').classList.add('active');
   }
 
-  /* ---- helpers ---- */
   function closeModalById(id) {
     document.getElementById(id).classList.remove('active');
   }
@@ -889,11 +887,54 @@
   }
 
   function escHtml(str) {
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  function escJs(str) {
-    return str.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  function askAI(promptType) {
+    var customInput = document.getElementById('ai-custom-input');
+    var customMessage = customInput ? customInput.value.trim() : '';
+    if (promptType === 'custom' && !customMessage) { customInput.focus(); return; }
+
+    var wrap = document.getElementById('ai-response-wrap');
+    var thinking = document.getElementById('ai-thinking');
+    var response = document.getElementById('ai-response');
+
+    wrap.style.display = 'block';
+    thinking.style.display = 'block';
+    response.textContent = '';
+
+    var relation = document.getElementById('ai-relation-input');
+    var relationVal = relation ? relation.value.trim() : '';
+    var body = 'prompt_type=' + encodeURIComponent(promptType) + '&relation=' + encodeURIComponent(relationVal);
+    if (promptType === 'custom') {
+      body += '&custom_message=' + encodeURIComponent(customMessage);
+      customInput.value = '';
+    }
+
+    fetch('/person/' + PERSON_ID + '/ask', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body
+    }).then(function(r) { return r.json(); }).then(function(data) {
+      thinking.style.display = 'none';
+      if (data.ok) {
+        response.textContent = data.answer;
+      } else {
+        response.textContent = 'Coś poszło nie tak. Spróbuj ponownie.';
+      }
+    }).catch(function() {
+      thinking.style.display = 'none';
+      response.textContent = 'Coś poszło nie tak. Spróbuj ponownie.';
+    });
+  }
+  function saveRelation() {
+    var input = document.getElementById('ai-relation-input');
+    var val = input.value.trim();
+    if (!val) return;
+    input.style.borderColor = 'var(--sage)';
+    setTimeout(function() {
+      input.style.borderColor = 'var(--beige-dark)';
+    }, 1200);
   }
 </script>
 
